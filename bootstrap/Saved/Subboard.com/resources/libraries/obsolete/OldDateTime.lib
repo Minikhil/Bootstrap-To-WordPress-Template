@@ -1,0 +1,406 @@
+const SUNDAY = 1
+const MONDAY = 2
+const TUESDAY = 3
+const WEDNESDAY = 4
+const THURSDAY = 5
+const FRIDAY = 6
+const SATURDAY = 7
+
+class TimeClass
+	public h, n, s
+	
+	public sub init (h2, n2, s2)
+		h = h2
+		n = n2
+		s = s2
+	end sub
+	
+	public property get i
+		i = iif(h mod 12 = 0, 12, h mod 12)
+	end property
+	
+	public property get p
+		p = iif(h > 11, "PM", "AM")
+	end property
+
+	public function iso
+		iso = sprints("\$:\$:\$", Array(IntUtil.pad(h, 2), IntUtil.pad(n, 2), IntUtil.pad(s, 2)))
+	end function
+	
+	public function cmp (other)
+		cmp = strComp(iso, other.iso)
+	end function
+	
+	public function cmp_over (other, pivot)
+		dim a, b, z
+		a = iso
+		b = other.iso
+		z = pivot.iso
+		
+		cmp_over = strComp(a, b) * iif((strComp(a, z) >= 0) xor (strComp(b, z) >= 0), -1, 1)
+	end function
+	
+	public function plus (span)
+		dim h2, n2, s2
+		
+		s2 = s + (span.seconds mod 60)
+		n2 = s2 \ 60 + n + (int(span.minutes) mod 60)
+		h2 = n2 \ 60 + h + (int(span.hours) mod 24)
+		
+		set plus = DateTime.time(h2 mod 24, n2 mod 60, s2 mod 60)
+	end function
+end class
+
+'class DatetimeClass
+'	public y, m, d, h, n, s
+'	
+'	public sub init (yq, mq, dq, hq, nq, sq)
+'		y = yq
+'		m = mq
+'		d = dq
+'		h = hq
+'		n = nq
+'		s = sq
+'	end sub
+'	
+'	public property get i
+'		i = iif(h mod 12 = 0, 12, h mod 12)
+'	end property
+'	
+'	public property get p
+'		p = iif(h > 11, "PM", "AM")
+'	end property
+'	
+'	' Accurate only after the Gregorian transition (1752 in England)
+'	public property get w
+'		dim mon
+'		select case m
+'			case 1: mon = iif(Datetime.is_leap_year(y), 6, 0)
+'			case 2: mon = iif(Datetime.is_leap_year(y), 2, 3)
+'			case 3: mon = 3
+'			case 4: mon = 6
+'			case 5: mon = 1
+'			case 6: mon = 4
+'			case 7: mon = 6
+'			case 8: mon = 2
+'			case 9: mon = 5
+'			case 10: mon = 0
+'			case 11: mon = 3
+'			case 12: mon = 5
+'		end select
+'		dim cent: cent = 2 * (3 - ((y \ 100) mod 4))
+'		dim year: year = (y mod 100)
+'		
+'		w = 1 + (cent + year + (year \ 4) + mon + d) mod 7
+'	end property
+'	
+'	public property get z
+'		z = y mod 100
+'	end property
+'	
+'	public function cmp (other)
+'		cmp = strComp(iso, other.iso)
+'	end function
+'	
+'	public function plus (span)
+'		dim y2, m2, d2, h2, n2, s2
+'		
+'		s2 = s + (span.seconds mod 60)
+'		n2 = s2 \ 60 + n + (int(span.minutes) mod 60)
+'		h2 = n2 \ 60 + h + (int(span.hours) mod 24)
+'		d2 = h2 \ 24 + d + int(span.days)
+'		m2 = m
+'		y2 = y
+'		
+'		s2 = s2 mod 60
+'		n2 = n2 mod 60
+'		h2 = h2 mod 24
+'		
+'		do while d2 >= Datetime.days_in_year(y2)
+'			d2 = d2 - Datetime.days_in_year(y2)
+'			y2 = y2 + 1
+'		loop
+'		
+'		do while d2 >= Datetime.days_in_month(y2, m2)
+'			d2 = d2 - Datetime.days_in_month(y2, m2)
+'			m2 = m2 mod 12 + 1
+'			if m2 = 1 then y2 = y2 + 1
+'		loop
+'		
+'		set plus = new DatetimeClass
+'		plus.init y2, m2, d2, h2, n2, s2
+'	end function
+'	
+'	public function format (template)
+'		dim sb: set sb = StringBuilder.string_builder
+'		dim i, c, n, f
+'		
+'		do while len(template) > 0
+'			i = inStr(template, "%")
+'			
+'			if i > 0 then
+'				sb.add left(template, i - 1)
+'				
+'				c = mid(template, i+1, 1)
+'				if c = "%" then
+'					f = "%"
+'				elseif isNumeric(c) then
+'					n = ""
+'					do while isNumeric(c)
+'						n = n & c
+'						i = i + 1
+'						c = mid(template, i+1, 1)
+'					loop
+'					f = IntUtil.pad(eval("me." & c), n)
+'				else
+'					f = eval("me." & c)
+'				end if
+'				
+'				sb.add f
+'				template = right(template, len(template) - i - 1)
+'			else
+'				sb.add template
+'				template = ""
+'			end if
+'		loop
+'		
+'		format = sb.string
+'	end function
+'	
+'	public function iso
+'		iso = iso_date & " " & iso_time
+'	end function
+'	
+'	public function iso_date
+'		iso_date = IntUtil.pad(y, 4) & "-" & IntUtil.pad(m, 2) & "-" & IntUtil.pad(d, 2)
+'	end function
+'	
+'	public function iso_time
+'		iso_time = IntUtil.pad(h, 2) & ":" & IntUtil.pad(n, 2) & ":" & IntUtil.pad(s, 2)
+'	end function
+'end class
+
+class DatetimeModule
+	private current_ ' establishes the current time once only
+	private iso_re_
+	private iso_date_re_
+	private iso_time_re_
+	
+	private sub class_initialize
+		'set current_ = from_vb(now)
+		set iso_re_ = new RegExp: iso_re_.pattern = "(\d\d\d\d)-(\d\d)-(\d\d).(\d\d):(\d\d):(\d\d)"
+		set iso_date_re_ = new RegExp: iso_date_re_.pattern = "(\d\d\d\d)?-?(\d\d)?-?(\d\d)?"
+		set iso_time_re_ = new RegExp: iso_time_re_.pattern = "(\d\d)?:?(\d\d)?:?(\d\d)?"
+	end sub
+	
+	'public function datetime (y, m, d, h, n, s)
+	'	set datetime = new DatetimeClass
+	'	datetime.init y, m, d, h, n, s
+	'end function
+	
+	'public function date (y, m, d)
+	'	set date = datetime(y, m, d, 0, 0, 0)
+	'end function
+	
+	public function time (h, n, s)
+		set time = new TimeClass
+		time.init h, n, s
+	end function
+	
+	'public function from_vb (vb)
+	'	set from_vb = datetime(year(vb), month(vb), day(vb), hour(vb), minute(vb), second(vb))
+	'end function
+	'
+	'public function parse (str)
+	'	set parse = from_vb(cDate(str))
+	'end function
+	
+	'public function iso (str)
+	'	dim matches: set matches = iso_re_.execute(str)
+	'	if matches.count = 0 then
+	'		set iso = nothing
+	'	else
+	'		dim parts: set parts = matches(0).subMatches
+	'		set iso = datetime(parts(0), parts(1), parts(2), parts(3), parts(4), parts(5))
+	'	end if
+	'end function
+	'
+	'public function iso_date (str)
+	'	dim matches: set matches = iso_date_re_.execute(str)
+	'	if matches.count = 0 then
+	'		set iso_date = nothing
+	'	else
+	'		dim parts: set parts = matches(0).subMatches
+	'		set iso_date = date(parts(0), parts(1), parts(2))
+	'	end if
+	'end function
+	
+	public function iso_time (str)
+		dim matches: set matches = iso_time_re_.execute(str)
+		if matches.count = 0 then
+			set iso_time = nothing
+		else
+			dim parts: set parts = matches(0).subMatches
+			set iso_time = time(parts(0), parts(1), parts(2))
+		end if
+	end function
+	
+	'public function current
+	'	set current = current_
+	'end function
+	
+	'public function is_leap_year (y)
+	'	is_leap_year = ((y mod 4 = 0) and ((y mod 100 <> 0) or (y mod 400 = 0)))
+	'end function
+	
+	'public function days_in_month (y, m)
+	'	select case m
+	'		case 0: days_in_month = 1
+	'		case 1: days_in_month = 31
+	'		case 2: days_in_month = iif(is_leap_year(y), 29, 28)
+	'		case 3: days_in_month = 31
+	'		case 4: days_in_month = 30
+	'		case 5: days_in_month = 31
+	'		case 6: days_in_month = 30
+	'		case 7: days_in_month = 31
+	'		case 8: days_in_month = 31
+	'		case 9: days_in_month = 30
+	'		case 10: days_in_month = 31
+	'		case 11: days_in_month = 30
+	'		case 12: days_in_month = 31
+	'	end select
+	'end function
+	
+	'public function days_in_year (y)
+	'	days_in_year = 365 + iff(is_leap_year(y), 1)
+	'end function
+	
+	'public function month_name (m)
+	'	month_name = monthName(m)
+	'end function
+	
+	public function format (template, datetime)
+		dim sb: set sb = StringUtil.builder
+		dim i, c, n, f
+		
+		do while len(template) > 0
+			i = inStr(template, "%")
+			
+			if i > 0 then
+				sb.add left(template, i - 1)
+				
+				c = mid(template, i+1, 1)
+				if c = "%" then
+					f = "%"
+				elseif isNumeric(c) then
+					n = ""
+					do while isNumeric(c)
+						n = n & c
+						i = i + 1
+						c = mid(template, i+1, 1)
+					loop
+					f = IntUtil.pad(eval("datetime." & c), n)
+				else
+					f = eval("datetime." & c)
+				end if
+				
+				sb.add f
+				template = right(template, len(template) - i - 1)
+			else
+				sb.add template
+				template = ""
+			end if
+		loop
+		
+		format = sb.string
+	end function
+end class
+dim Datetime: set Datetime = new DatetimeModule
+
+class TimeSpanClass
+	public seconds
+	
+	public property get minutes
+		minutes = seconds / 60
+	end property
+	
+	public property let minutes (val)
+		seconds = val * 60
+	end property
+	
+	public property get hours
+		hours = seconds / 3600
+	end property
+	
+	public property let hours (val)
+		seconds = val * 3600
+	end property
+	
+	public property get days
+		days = seconds / 86400
+	end property
+	
+	public property let days (val)
+		seconds = val * 86400
+	end property
+	
+	public function plus (other)
+		set plus = TimeSpan.seconds(seconds + other.seconds)
+	end function
+	
+	public function minus (other)
+		set minus = TimeSpan.seconds(seconds - other.seconds)
+	end function
+	
+	public function times (scalar)
+		set times = TimeSpan.seconds(seconds * scalar)
+	end function
+	
+	public function div (other)
+		if isObject(other) then
+			div = seconds / other.seconds
+		else
+			set div = TimeSpan.seconds(seconds / other)
+		end if
+	end function
+end class
+
+class TimeSpanModule
+	private iso_time_re_
+	
+	private sub class_initialize
+		set iso_time_re_ = new RegExp: iso_time_re_.pattern = "(\d\d)?:?(\d\d)?:?(\d\d)?"
+	end sub
+	public function seconds (val)
+		set seconds = new TimeSpanClass
+		seconds.seconds = val
+	end function
+	
+	public function minutes (val)
+		set minutes = new TimeSpanClass
+		minutes.minutes = val
+	end function
+	
+	public function hours (val)
+		set hours = new TimeSpanClass
+		hours.hours = val
+	end function
+	
+	public function days (val)
+		set days = new TimeSpanClass
+		days.days = val
+	end function
+	
+	public function iso_time (str)
+		dim matches: set matches = iso_time_re_.execute(str)
+		if matches.count = 0 then
+			set iso_time = nothing
+		else
+			dim parts: set parts = matches(0).subMatches
+			set iso_time = new TimeSpanClass
+			iso_time.seconds = parts(2) + 60*parts(1) + 3600*parts(0)
+		end if
+	end function
+end class
+
+dim TimeSpan: set TimeSpan = new TimeSpanModule

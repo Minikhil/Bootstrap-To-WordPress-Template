@@ -1,0 +1,96 @@
+class DataObjectClass
+	private attrs_
+	
+	public function init (model)
+		set attrs_ = Server.CreateObject("scripting.dictionary")
+		dim name: for each name in model.keys
+			attrs_.add name, (new DataAttributeClass).init(name, model(name))
+		next
+		set init = me
+	end function
+	
+	public default property get attribute (name)
+		assign attribute, attrs_.item(name).value
+	end property
+	
+	public property let attribute (name, val)
+		if attrs_.exists(name) then
+			attrs_(name).value = val
+		else
+			raise "Attribute " & name & " does not exist."
+		end if
+	end property
+	
+	public property set attribute (name, val)
+		if attrs_.exists(name) then
+			set attrs_(name).value = val
+		else
+			raise "Attribute " & name & " does not exist."
+		end if
+	end property
+	
+	public function load (data)
+		dim name: for each name in attrs_.keys
+			attrs_(name).load data(name)
+		next
+	end function
+end class
+
+class DataAttributeClass
+	private name_
+	private value_
+	private type_
+	
+	public function init (name, typ)
+		name_ = name
+		set type_ = typ
+		set init = me
+	end function
+	
+	public property get value
+		assign value, value_
+	end property
+	
+	public property let value (val)
+		value_ = val
+	end property
+	
+	public property set value (val)
+		set value_ = val
+	end property
+	
+	public property get name
+		name = name_
+	end property
+	
+	public property get typ
+		typ = type_
+	end property
+	
+	public function load (val)
+		assign value_, type_.unmarshall(val)
+	end function
+end class
+
+class DataModelClass
+	private model_
+	
+	private sub CLASS_INITIALIZE
+		set model_ = Server.CreateObject("scripting.dictionary")
+	end sub
+	
+	public default property get construct
+		set construct = (new DataObjectClass).init(model_)
+	end property
+	
+	public function attribute(name, typ) 'type is reserved word
+		model_.add name, typ
+	end function
+end class
+' <input type="text" name="url" value="" id="url">'
+class DataModelModule
+	public default property get construct
+		set construct = new DataModelClass
+	end property
+end class
+dim DataModel: set DataModel = new DataModelModule

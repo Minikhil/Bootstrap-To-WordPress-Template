@@ -1,0 +1,27 @@
+<%	option explicit %>
+
+<!--
+	METADATA TYPE="typelib"
+	UUID="00000205-0000-0010-8000-00AA006D2EA4"
+	NAME="ADODB Type Library"
+-->
+
+<%'	Global constants and functions that operate as language extensions. %>
+<!-- #include virtual='/resources/libraries/Lang.lib' -->
+
+<%'	The FileSystem singleton and Path class, required for Import. %>
+<!-- #include virtual='/resources/libraries/FileSystem.lib' -->
+
+<%'	The Import singleton, which allows other libraries to be imported. %>
+<!-- #include virtual='/resources/libraries/Import.lib' -->
+
+<%
+	import "Str"
+	import "Int"
+	import "Float"
+	import "Bool"
+	
+	import "Iterator"
+	
+	import "Print"
+%>

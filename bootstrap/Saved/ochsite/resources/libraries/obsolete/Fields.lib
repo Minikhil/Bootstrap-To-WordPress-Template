@@ -1,0 +1,63 @@
+Import.library"DataManagers"
+
+class Field
+	private form_ 'The form to which the field belongs'
+	
+	private name_ 'The name of the field, used for the HTML name and id'
+	private label_ 'HTML label, defaults to humanized name'
+	private kind_
+	private value_ 'The value held by the field, taken from Request.Form'
+	private db_field_
+	
+	private formatter_
+	private valid_
+	
+	public property get name:            name = name_:               end property
+	
+	public property get value:           value = value_:             end property
+	public property let value (val):     value_ = val:               end property
+	
+	public property get label:           label = label_:             end property
+	public property let label (val):     label_= val:                end property
+	
+	public property get kind:            kind = kind_:               end property
+	public property let kind (val):      kind_ = val:                end property
+	
+	public property get db_field:        db_field = db_field_:       end property
+	public property let db_field (val):  db_field_ = val:            end property
+	
+	public property get formatter:       set formatter = formatter_: end property
+	public property set formatter (val): set formatter_ = val:       end property
+	
+	public function init (form, name)
+		set form_ = form
+		name_ = name
+		label_ = StringUtil.humanize(name)
+		db_field_ = name
+		value_ = iff(not isEmpty(Request.form(name)), Request.form(name))
+		valid_ = true
+	end function
+	
+	public function print
+		prints "<li class='field \$\$'>", Array(kind_, iff(METHOD = "POST" and not valid_, " invalid"))
+		formatter_.print me
+		Response.write "</li>"
+	end function
+	
+	public function validate_required
+		if value_ = "" then error("is required")
+	end function
+	
+	public function validate_format (pattern)
+		dim regex: set regex = new RegEx
+		regex.pattern = pattern
+		if not (value_ = "" or regex.test(value_)) then
+			error("is not formatted correctly")
+		end if
+	end function
+	
+	public function error (message)
+		valid_ = false
+		form_.error(label & " " & message)
+	end function
+end class

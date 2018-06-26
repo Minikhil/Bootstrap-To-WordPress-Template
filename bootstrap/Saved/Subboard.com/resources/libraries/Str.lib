@@ -1,0 +1,291 @@
+class StringClass
+'	A wrapper class for strings. Provides additional functionality beyond that
+'	of native strings, including text processing, efficient string building,
+'	interpretation of C-like escape sequences, and autounboxing via the default
+'	property.
+	
+	private function MIN_ARRAY_SIZE
+		MIN_ARRAY_SIZE = 3
+	end function
+	
+	private function GRANTED_HEAD_ROOM
+		GRANTED_HEAD_ROOM = 2
+	end function
+	
+	private finished_
+'		The portion of the String's data that is fully assembled.
+	
+	private data_
+'		The portion of the String's data that has not been integrated into
+'		the finished part.
+	
+	private size_
+'		Number of native strings in the data_ array. Guaranteed >= len(data).
+	
+	private stream_
+'		OutputStream object for this String. Initialized at need.
+	
+	public function init (val)
+'		Default initializer. Takes in any value and coerces it to a native
+'		string. Does not initialize data array for efficiency's sake - most
+'		Strings will probably go their entire lifetime without needing it.
+		
+		finished_ = cStr(val)
+		set init = me
+	end function
+	
+	public function init_literal (raw)
+'		Initializes the String from a C-like native string literal.
+'		Interprets a more or less standard assortment of escape
+'		sequences, with some adaptations for VBScript:
+'		
+'		Seq	Hex	Dec	Notes
+'		\0	00	 0	Null character
+'		\a	07	 7	Bell character
+'		\b	08	 8	Backspace
+'		\t	09	 9	Horizontal Tab
+'		\n	0a	10	Line Feed
+'		\v	0b	11	Vertical Tab
+'		\f	0c	12	Form Feed
+'		\r	0d	13	Carriage Return
+'		\e	1b	27	Escape
+'		\'	22	34	Double Quote
+'		\\	5c	92	Backslash
+'
+'		\dNNN		Decimal character NNN
+'		\oNNN		Octal character NNN
+'		\xNN		Hex character NN
+'		\uNNNN		Hex Unicode character NNNN
+'
+'		This is not true escaping and has no syntactic support, so you
+'		cannot escape double quotes (except by the normal vbscript
+'		approach of doubling the quotes). Also note that all numeric
+'		escapes must contain a base prefix: no \042-style escaping.
+'		Honestly, I just didn't want to fool with it. Finally, if you
+'		need Unicode characters outside the Basic Multilingual Plane,
+'		you'll just have to do it manually.
+		
+		dim start: start = 1
+		dim slash: slash = inStr(start, raw, "\")
+		
+		do while slash > 0
+			add mid(raw, start, slash - start)
+			start = slash + 2
+			
+			select case mid(raw, slash + 1, 1)
+				case "\": add "\"
+				case "'": add """"
+				
+				case "0": add VBNULLCHAR
+				case "a": add chr(7)
+				case "b": add chr(8)
+				case "e": add chr(27)
+				case "f": add VBFORMFEED
+				case "n": add VBLF
+				case "r": add VBCR
+				case "t": add VBTAB
+				case "v": add VBVERTICALTAB
+				
+				case "d":
+					add chr(mid(raw, start, 3))
+					start = start + 3
+				case "o":
+					add chr("&o" & mid(raw, start, 3))
+					start = start + 3
+				case "x":
+					add chr("&h" & mid(raw, start, 2))
+					start = start + 2
+				case "u":
+					add chrW("&h" & mid(raw, start, 4))
+					start = start + 4
+			end select
+			
+			slash = inStr(start, raw, "\")
+		loop
+		
+		add right(raw, len(raw) - start + 1)
+		
+		set init_literal = me
+	end function
+	
+	public default property get value
+'		If the data_ array is nonempty, it is collapsed into finished_ and
+'		its data freed. Either way, finished_ is returned. Because this is the
+'		default property, it rarely needs to be invoked manually - as soon as a
+'		String is used where a scalar is expected, this function will be
+'		invoked automatically.
+'		
+'		Example:
+'			print Str("Hello, World!")
+'		=>	Hello, World!
+		
+		if (size_ > 0) then
+			finished_ = finished_ & join(data_, vbNullString)
+			data_ = empty
+			size_ = 0
+		end if
+		value = finished_
+	end property
+	
+	public property let value (val)
+'		This is a sort of assignment constructor that replaces the contents
+'		of the String with the new value. Thankfully for our sanity, it cannot
+'		be invoked automatically in vbscript, so it can't be used accidentally.
+'		
+'		Example:
+'			dim s: set s = String.nil
+'			s()= "New value"
+'			print s
+'		=>	New value
+		
+		data_ = empty
+		size_ = empty
+		init(val)
+	end property
+	
+	public function add (s)
+'		Concatenates s to the String. In practice, puts it on the end of the
+'		data_ array, expanding exponentially as needed.
+'		
+'		Returns me for method chaining.
+		
+		s = s ' If s is a String object, then this will "collapse" it into a native string.
+		      ' Needed to avoid problems when adding a string to itself.
+		
+		size_ = size_ + 1
+		if (isEmpty(data_)) then
+			redim data_(MIN_ARRAY_SIZE)
+		elseif (size_ > uBound(data_)) then
+			redim preserve data_(Float(uBound(data_) * GRANTED_HEAD_ROOM).ceil)
+		end if
+		
+		data_(size_ - 1) = s
+		
+		set add = me ' method chaining
+	end function
+	
+	public function write (s)
+'		For compatibility with the interface used by formatting functions
+		
+		add s
+	end function
+	
+	public function identifier_case
+'		An inelegant legacy function to turn an arbitrary String into something
+'		suitable for use as a key or attribute.
+		
+		identifier_case = replace(lCase(value), " ", "_")
+		identifier_case = replace(identifier_case, "/", "-")
+		set identifier_case = Str(identifier_case)
+	end function
+	
+	public function sentence_case(s)
+		sentence_case = ucase(left(s, 1)) & lcase(right(s, len(s) - 1))
+	end function
+	
+	public function humanize
+		dim words: words = value
+		
+		words = replace(words, "-", "_")
+		words = split(words, "_")
+		dim i: for i = 0 to uBound(words)
+			words(i) = sentence_case(words(i))
+		next
+		set humanize = Str(join(words, " "))
+	end function
+	
+	public function url_encode
+		set url_encode = Str(Server.URLEncode(value))
+	end function
+	
+	public function pad (width)
+'		Left-pads the String with spaces to the specified width.
+		
+		set pad = Str(space(width - len(value)) & value)
+	end function
+	
+	public function slice (width)
+'		Splits the array into an array of slices, each slice a native string of
+'		the specified width. The last string may be shorter.
+		
+		dim length: length = Float(len(value)/width).ceil
+		dim arr(): redim arr(length - 1)
+		
+		dim i: for i = 0 to length - 1
+			arr(i) = mid(value, 1 + i*width, width)
+		next
+		
+		slice = arr
+	end function
+	
+	public function slice_right (width)
+'		Splits the array into an array of slices, each slive a native string of
+'		the specified width. The first string may be shorter.
+		
+		dim length: length = Float(len(value)/width).ceil
+		dim arr(): redim arr(length - 1)
+		
+		dim i: for i = 1 to length - 1
+			arr(length - i) = mid(value, len(value) + 1 - i*width, width)
+		next
+		arr(0) = left(value, (len(value) - 1) mod width + 1)
+		
+		slice_right = arr
+	end function
+	
+	public function marshall
+		marshall = value
+	end function
+	
+'------------------------------------------------
+	
+	private function stream
+		if isEmpty(stream_) then set stream_ = OutputStream.new(me)
+		set stream = stream_
+	end function
+	
+	public function print (s)
+		stream.print(s)
+		set print = me ' Method chaining
+	end function
+	
+	public function printf (template, args)
+		stream.printf template, args
+		set printf = me ' Method chaining
+	end function
+end class
+
+class StringModule
+	public default property get construct (val)
+		set construct = (new StringClass).init(val)
+	end property
+	
+	public function [new] (val)
+		set [new] = construct(val)
+	end function
+	
+	public function blank
+		set blank = (new StringClass).init(vbNullString)
+	end function
+	
+	public function nil
+		set nil = (new StringClass).init(vbNullString)
+	end function
+	
+	public function [empty]
+		set [empty] = (new StringClass).init(vbNullString)
+	end function
+	
+	public function parse (val)
+		set parse = (new StringClass).init_literal(val)
+	end function
+	
+	public function unmarshall (data)
+		set unmarshall = construct(data)
+	end function
+end class
+dim Str: set Str = new StringModule
+
+function sprintf (template, args)
+	set sprintf = Str.empty.printf(template, args)
+end function

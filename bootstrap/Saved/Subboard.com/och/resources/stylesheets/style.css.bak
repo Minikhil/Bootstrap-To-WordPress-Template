@@ -1,0 +1,219 @@
+body {
+	padding-top: 58px;
+}
+
+h1 {
+	height: 125px;
+	width: 100%;
+	border: none;
+}
+
+h1 a {
+	background-image: url("/och/resources/images/header.png");
+}
+
+ul#categories {
+	background-color: #194183;
+}
+
+#listings {
+	width: 100%;
+}
+
+#listings * {
+	display: block;
+	float: left;
+	width: 100%;
+}
+
+#listings .headings {
+	font-weight: bold;
+}
+
+#listings .date_listed {
+	margin-top: 1em;
+	font-weight: bold;
+}
+
+#listings .odd {
+	background: #e7e7e7;
+}
+
+#listings .listing {
+	padding: 2px 0;
+}
+
+#listings .listing a {
+	text-decoration: none;
+	color: #222222; /* Should be inherit. One browser doesn't support it. Guess which one? */
+	cursor: pointer;
+}
+
+#listings .rent {width: 20%;}
+#listings .bedrooms_total {width: 12.5%;}
+#listings .bedrooms_available {width: 12.5%;}
+#listings .date_available {width: 20%;}
+#listings .area {width: 30%;}
+#listings .picture {width: 4%; font-weight: bold;}
+
+.listing_image, .area img {
+	height: 379px;
+	width: 568px;
+}
+
+#map {
+	height: 568px;
+	width: 568px;
+}
+
+dl.listing dt {
+	float: left;
+	clear: both;
+	width: 20%;
+	font-weight: bold;
+}
+
+dl.listing dd {
+	float: left;
+	width: 80%;
+}
+
+.errors li {
+	font-size: 1.3em;
+	line-height: 1.5em;
+	color: #a00;
+}
+
+form {
+	overflow: hidden;
+	margin-bottom: 1em;
+	width: 100%;
+}
+
+form .field {
+	clear: both;
+	float: left;
+	margin-top: .5em;
+	width: 100%;
+}
+
+form .field.error, form .field.error input {
+	background: #fdd;
+}
+
+form .field .multipart {
+	font-size: 1.25em;
+}
+
+form .field .multipart input {
+	display: inline;
+	float: none;
+	margin: 0 .16667em;
+	width: 2.5em;
+	font-size: .8em;
+}
+
+.field label {
+	display: block;
+	float: left;
+	width: 10em;
+}
+
+fieldset {
+	clear: both;
+	margin-bottom: 1em;
+	width: 100%;
+}
+
+fieldset.radio, fieldset.checkboxes {
+	margin-bottom: 0;
+}
+
+fieldset.checkboxes .field {
+	float: left;
+	clear: none;
+	width: 25%;
+}
+
+fieldset.checkboxes input {
+	float: left;
+}
+
+fieldset.sub_options .legend {
+	display: block;
+	float: left;
+	width: 10em;
+	height: 100%;
+	padding-bottom: 1em;
+}
+
+fieldset.sub_options .field {
+	clear: none;
+	float: left;
+	width: 20em;
+	margin-top: 0;
+	margin-bottom: 4px;
+}
+
+fieldset.sub_options label {
+	width: 3em;
+}
+
+fieldset.sub_options input {
+	width: 8em;
+}
+
+form .sample {
+	float: left;
+	clear: both;
+	margin-left: 10em;
+}
+
+* html form .sample {
+	margin-left: 5em;
+}
+
+form fieldset.safety fieldset.checkboxes .field {
+	width: 100%;
+}
+
+form fieldset.safety fieldset.checkboxes label {
+	width: auto;
+}
+
+form .previous {
+	float: left;
+}
+
+form .next {
+	float: right;
+}
+
+.preview dl {
+	float: left;
+	width: 100%;
+}
+
+ul.checklist {
+	list-style-type: none;
+	margin-left: 0;
+	padding-left: 1em;
+}
+
+ul.checklist li span.checkmark {
+	position: relative;
+	left: -1em;
+}
+
+ul.checklist li.true span.checkmark {
+	color: #070;
+}
+
+ul.checklist li.false span.checkmark {
+	color: #900;
+}
+
+.disclaimer {
+	margin-top: 2em;
+	border-top: 1px solid #CFD6E9;
+}

@@ -1,0 +1,91 @@
+###########################################
+# english.lng v2.02                       #
+#=========================================#
+# emAlbum v2.1                            #
+# Standard Edition                        #
+#-----------------------------------------#
+# First Created: 2/17/03                  #
+# Last Updated: 8/13/03                   #
+#-----------------------------------------#
+# Written by: Eric Martin                 #
+# http://www.emalbum.com                  # 
+#-----------------------------------------#
+# Copyright (c) 2003 emAlbum.com          # 
+# All Rights Reserved                     #
+########################################### 
+
+##############################################################################
+# Copyright and Licensing Information                                        # 
+#============================================================================#
+# A copy of the License Agreement was included in this download as           #
+# license.html. A copy can also be found on http://www.emalbum.com/.         #
+#                                                                            #
+# By installing this software, you agree to its terms. All Copyright and     #
+# Licensing information must remain intact. Please contact us with any       #
+# questions at support@emalbum.com.                                          #
+##############################################################################
+
+# emAlbum messages
+$text{'0'} = "Click to view larger image";
+$text{'1'} = "Loading Image...";
+$text{'2'} = "Total Albums:";
+$text{'3'} = "Total Images:";
+$text{'4'} = "Page:";
+$text{'5'} = "Total Images:";
+$text{'6'} = "Page";
+$text{'7'} = "of";
+$text{'8'} = ">";
+$text{'9'} = "Previous";
+$text{'10'} = "Next";
+$text{'11'} = "Total Albums:";
+$text{'12'} = "Total Images:";
+$text{'13'} = "::";
+$text{'14'} = "Image:";
+$text{'15'} = "of";
+$text{'16'} = "Image:";
+$text{'17'} = "Back to Thumbnails";
+$text{'18'} = "New or Updated Album";
+$text{'19'} = "Play Slideshow";
+$text{'20'} = "Exit Slideshow";
+$text{'21'} = "Speed Up Slideshow";
+$text{'22'} = "Slow Down Slideshow";
+$text{'23'} = "Second Delay";
+$text{'24'} = "End of Slideshow";
+$text{'26'} = "Playing...";
+$text{'27'} = "Pause Slideshow";
+$text{'28'} = "Slideshow Paused";
+$text{'29'} = "Speed:";
+$text{'30'} = "Restart Slideshow";
+$text{'31'} = "View Slideshow";
+$text{'32'} = "Slideshow:";
+$text{'33'} = "Jump to image:";
+
+# emAlbum.cgi Error Messages
+$text{'100'} = "emAlbum cannot open the template file";
+$text{'101'} = "emAlbum cannot determine the path to your script";
+$text{'102'} = "emAlbum cannot open the folder";
+$text{'103'} = "emAlbum could not find any folders in your main directory";
+$text{'104'} = "emAlbum cannot open the folder";
+$text{'105'} = "emAlbum cannot open the folder";
+$text{'106'} = "emAlbum could not find any valid images in";
+$text{'107'} = "emAlbum cannot open the folder";
+$text{'108'} = "emAlbum could not find any valid images in";
+$text{'109'} = "emAlbum cannot open the folder";
+$text{'110'} = "emAlbum could not find your thumbnail";
+$text{'111'} = "emAlbum cannot open the folder";
+$text{'112'} = "The emAlbum copyright tag has been modified. Please change it back.";
+$text{'113'} = "emAlbum cannot find the template copyright tag";
+
+$text{'err'} = "An error has occured:";
+$text{'err1'} = "Error";
+$text{'err_code'} = "Error Code:";
+$text{'err_msg'} = "Message:";
+$text{'err_rpt'} = "Please";
+$text{'err_rpt1'} = "contact";
+$text{'err_rpt2'} = "the administrator if this problem continues.";
+
+# Do not edit the lines below.
+$text{'pb'} = qq~Powered by <a class="cp" href="http://www.emalbum.com" target="_blank">emAlbum</a>~;
+$text{'cp'} = qq~© 2003, emAlbum. All Rights Reserved.~;
+
+1;

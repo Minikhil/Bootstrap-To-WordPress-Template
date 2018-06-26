@@ -1,0 +1,171 @@
+<!-- #include virtual='/och/resources/includes/initialize.inc' -->
+
+<!-- #include virtual='/resources/includes/doctype.inc' -->
+
+<%
+	category = "Search"
+	
+	Dim db: Set db = Server.CreateObject ("adodb.connection")
+	db.Provider = "Microsoft.Jet.OLEDB.4.0"
+	db.Open "c:/Inetpub/wwwroot/test_thx11384eb/och.mdb"
+	
+	Dim areas: Set areas = Server.CreateObject("adodb.recordset")
+	areas.Open "select distinct [name] from [Localities] union select [name] from [Areas] order by [name]", db
+	
+	Dim streets: Set streets = Server.CreateObject("adodb.recordset")
+	streets.Open "select [street] from [Streets] order by [street]", db
+%>
+
+<html lang='en-us'>
+	<head>
+		<!-- #include virtual=/och/resources/includes/head.inc -->
+		<script type='text/javascript' charset='utf-8'>
+			var legend;
+			var options;
+			
+			function toggleMoreOptions () {
+				legend.className = (legend.className == "toggle-off") ? "toggle-on" : "toggle-off"
+				options.className = (options.className == "hidden") ? "" : "hidden";
+			}
+			
+			function prepareMoreOptions () {
+				var moreOptions = document.getElementById("more_options");
+				options = document.createElement("div");
+				
+				var next;
+				for (var child = moreOptions.firstChild; child != null; child = next) {
+					next = child.nextSibling
+					switch(child.nodeName) {
+						case "SPAN":
+							legend = child;
+							legend.className = "toggle-on";
+							legend.onclick = toggleMoreOptions;
+							break;
+						case "DIV":
+							options.appendChild(child);
+							break;
+						case "FIELDSET":
+							options.appendChild(child);
+							break;
+					}
+				}
+				moreOptions.appendChild(options);
+				options.setAttribute("style", "background: #eee");
+				toggleMoreOptions();
+			}
+			
+			<% OnLoad("prepareMoreOptions") %>
+		</script>
+		
+		<style type='text/css'>
+			.toggle-on, .toggle-off {
+				cursor: pointer;
+				
+				padding-right: 10px;
+				background-repeat: no-repeat;
+				background-position: 100% 60%;
+			}
+			
+			.toggle-off {
+				background-image: url("/och/resources/images/disclosure_triangle_closed.png");
+			}
+			
+			.toggle-on {
+				background-image: url("/och/resources/images/disclosure_triangle_open.png");
+			}
+		</style>
+		
+	</head>
+	<body>
+		<!-- #include virtual=/och/resources/includes/header.inc -->
+		
+		<!-- #include virtual=/och/resources/includes/categories.inc -->
+		
+		<div id='content'>
+			<h2>Search SBI Off-Campus Housing</h2>
+			
+			<form id='och_search' action='search.asp'>
+				<fieldset>
+					<fieldset class='sub_options'>
+						<div class='legend'>Rent</div>
+						<div class='field'>
+							<label for='rent_min'>Min</label>
+							<input type='text' name='rent_min' id='rent_min'>
+						</div>
+						<div class='field'>
+							<label for='rent_max'>Max</label>
+							<input type='text' name='rent_max' id='rent_max'>
+						</div>
+					</fieldset>
+					
+					<div class='field'>
+						<label for='bedrooms_available'>Bedrooms Available</label>
+						<input type='text' name='bedrooms_available' id='bedrooms_available'>
+						<!-- <div class='sample'>(Or more)</div> -->
+					</div>
+					
+					<div class='field'>
+						<label for='area'>Area</label>
+						<select name='area' id='area'>
+							<option value=''>&gt; All Areas</option>
+<%	do until areas.eof
+%>							<option><%= areas("name") %></option>
+<%	areas.MoveNext: loop %>
+						</select>
+					</div>
+				</fieldset>
+				
+				<fieldset id='more_options'>
+					<span class='legend'>More Options</span>
+					
+					<div class='field'>
+						<label for='street'>Street</label>
+						<select name='street' id='street'>
+							<option value=''>Any</option>
+<%	do until streets.eof
+%>							<option><%= TitleCase(streets("street")) %></option>
+<%	streets.MoveNext: loop %>
+						</select>
+					</div>
+					
+					<fieldset class='checkboxes'>
+<%	Dim feature: for each feature in features_array %>
+						<div class='field'>
+							<input type='checkbox' name='features' value='<%= feature %>' id='feature-<%= feature %>'>
+							<label for='feature-<%= feature %>'><%= Humanize(feature) %></label>
+						</div>
+<%	next %>
+					</fieldset>
+				</fieldset>
+				
+				<fieldset>
+					<div class='field'>
+						<button type='submit'>Search</button>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+		
+		<div id='secondary'>
+			<!-- #include virtual='/och/resources/includes/quick_links.inc' -->
+			
+			<!-- <div class='vcard'>
+				<h4 class='org organization-unit'>Off-Campus Housing</h4>
+				<div class='adr'>
+					<div class='street-address'>350 &amp; 365 Harriman Hall</div>
+					<div class='street-address'>SUNY at Buffalo, MSC</div>
+				</div>
+				<div>
+					<span class='locality'>Buffalo</span>, <span class='region'>NY</span> <span class='postal-code'>14214</span>
+				</div>
+				<div>
+					<div>Phone: <span class='tel'>(716) 829-2224</span></div>
+					<div>Fax: <span class='fax'>(716) 829-2232</span></div>
+					<a href='mailto:sbi-och@buffalo.edu' class='email'>sbi-och@buffalo.edu</a>
+				</div>
+			</div> -->
+		</div>
+		
+		<!-- #include virtual='/resources/includes/bottom_navigation_new.inc' -->
+	</body>
+</html>

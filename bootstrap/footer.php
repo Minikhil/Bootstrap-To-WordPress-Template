@@ -1,4 +1,31 @@
 <!-- Footer -->
+<style media="screen">
+/* Add a hover effect if you want */
+
+.fa:hover {
+  opacity: 0.7;
+}
+.fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.btn-social{
+
+}
+
+
+
+/* Set a specific color for each brand */
+
+
+
+
+}
+</style>
 <footer class="footer text-center">
   <div class="container">
     <div class="row">
@@ -17,25 +44,12 @@
           </li>
           <li class="list-inline-item">
             <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
-              <i class="fa fa-fw fa-google-plus"></i>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
               <i class="fa fa-fw fa-twitter"></i>
             </a>
           </li>
-          <li class="list-inline-item">
-            <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
-              <i class="fa fa-fw fa-linkedin"></i>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
-              <i class="fa fa-fw fa-dribbble"></i>
-            </a>
-          </li>
+
         </ul>
+
       </div>
       <div class="col-md-4">
         <h4 class="text-uppercase mb-4">Staff Use</h4>

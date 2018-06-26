@@ -1,0 +1,9 @@
+		<div class='table_layout_wrapper'>
+			<ul id='categories'>
+				<li class='category-search'><a href='index.asp' <% Current category, "Search" %>>Search</a></li>
+				<li class='category-advertise'><a href='advertise.asp' <% Current category, "Advertise" %>>Advertise</a></li>
+				<li class='category-roommates'><a href='roommates.asp' <% Current category, "Roommates" %>>Roommates</a></li>
+				<li class='category-resources'><a href='resources.asp' <% Current category, "Resources" %>>Resources</a></li>
+				<li class='category-contact'><a href='contact.asp' <% Current category, "Contact" %>>Contact Us</a></li>
+			</ul>
+		</div>

@@ -1,0 +1,299 @@
+class DatabaseClass
+'	A database abstraction class with a more convenient interface than
+'	ADODB.Connection. Provides several simple methods to safely query a
+'	database without the risk of SQL injection or the half-dozen lines of
+'	boilerplate otherwise necessary to avoid it.
+'	
+'	Example:
+'	
+'	dim db, record, record_set, rows_affected
+'	set db = Database("/path/to/db")
+'	set record = db.get_record("select * from T where id=?;", Array(42))
+'	set record_set = db.get_records("select * from T;", empty)
+'	rows_affected = db.execute("delete from T where foo=? and bar=?",
+'                              Array("foo; select from T where bar=", true))
+
+	private connection_
+'		An ADODB connection object. Should never be null.
+
+	private sub CLASS_TERMINATE
+		connection_.close
+	end sub
+	
+	public function init (path)
+'		Initializes a new database with an ADODB connection to the database at
+'		the specified path. Path must be a relative server path to an Access
+'		database. Returns me.
+		
+		set connection_ = Server.createObject ("adodb.connection")
+		connection_.provider = "Microsoft.Jet.OLEDB.4.0"
+		connection_.open Server.mapPath(path)
+		
+		set init = me
+	end function
+	
+	public function get_record (query, args)
+'		Fetches the first record returned from the supplied query wrapped in a
+'		HeavyRecord, or nothing if there are no results. 
+		
+		dim data: set data = native_recordset(query, args)
+		if data.eof then
+			set get_record = nothing
+		else
+			with Map.new
+				dim i: for i = 0 to data.fields.count - 1
+					dim f: set f = data.fields.item(i)
+					dim val: val = f.value
+					.add f.name, val
+				next
+				
+				set get_record = .immutable
+			end with
+		end if
+	end function
+	
+	public function get_records (query, args)
+'		Fetches all records returned from the supplied query wrapped in a
+'		RecordSet (different from the ADODB recordset; implemented below).
+		
+		set get_records = (new RecordSetClass).init(native_recordset(query, args))
+	end function
+	
+	public function execute (query, args)
+'		Executes the supplied query and returns the number of rows affected.
+		
+		dim rows_affected
+		build_command(query).execute rows_affected, args
+		execute = rows_affected
+	end function
+	
+	public function insert (table, values)
+		dim query
+		
+		dim params: set params = List.new
+		dim args: set args = List.new
+		dim placeholders: set placeholders = List.new
+		
+		with Iterator(values)
+			do while .has_current
+				params.add .key
+				args.add .value
+				placeholders.add "?"
+				
+				.move_next
+			loop
+		end with
+		
+		query = sprintf("insert into %s (%s) values (%s);", Array( _
+			table, _
+			params.join_with(", "), _
+			placeholders.join_with(", ")))
+		
+		execute query, args
+	end function
+	
+	private function build_command (query)
+'		Helper method to build an ADODB command from the supplied query.
+		
+		set build_command = Server.createObject("adodb.command")
+		build_command.commandText = query
+		set build_command.activeConnection = connection_
+	end function
+	
+	private function native_recordset (query, args)
+'		Helper method that takes a query string and array of arguments, queries
+'		the ADODB connection, and returns an ADODB recordset containing the
+'		result.
+		
+		set native_recordset = build_command(query).execute( , args) ' Omits out-parameter for number of rows
+	end function
+end class
+
+class DatabaseModule
+	private databases_
+'		A dictionary mapping database paths to constructed Database objects.
+	
+	private sub class_initialize
+		set databases_ = Server.createObject("scripting.dictionary")
+	end sub
+	
+	public default property get construct (path)
+'		Constructor. Aliases connect.
+		
+		set construct = connect(path)
+	end property
+	
+	public function connect (path)
+'		Returns a connection to the database at the specified path. Memoizes
+'		the result so that multiple attempts to connect to the same database
+'		return the same Database object.
+		
+		if (not databases_.exists(path)) then databases_.add path, (new DatabaseClass).init(path)
+		set connect = databases_(path)
+	end function
+	
+	public function escape (str)
+		escape = replace(str, "'", "\'")
+		escape = replace(escape, """", "\""")
+		escape = replace(escape, "[", "\[")
+		escape = replace(escape, "]", "\]")
+		escape = replace(escape, "\", "\\")
+	end function
+end class
+dim Database: set Database = new DatabaseModule
+
+class RecordSetClass
+'	An alternative to ADODB recordset that allows for hassle-free reading and
+'	iteration of results. It holds its data in an array, which allows the
+'	original ADODB recordset to be freed. This implementation, however, cannot
+'	support writing to the database.
+	
+	private data_
+'		Array holding all data in the RecordSet. Indexed by record, then by
+'		field number.
+	
+	public function init (rs)
+'		Copies data from the ADODB recordset rs to data_ and the field names
+'		and numbers into fields_. Returns me.
+		
+		set data_ = (new RSDataClass).init(rs)
+		
+		set init = me
+	end function
+	
+	public property get data (index, field)
+		data = data_.item(index, field)
+	end property
+	
+	public default property get record (i)
+'		Returns a new LightRecord which refers to the RecordSet's fields and
+'		data.
+		
+		set record = (new LightRecordClass).init(data_, i)
+	end property
+	
+	public property get size
+		size = data_.size
+	end property
+	
+	public function iterator
+		set iterator = global("Iterator").for_array(me)
+	end function
+	
+	public function project_list (col)
+		set project_list = List.new
+		dim i: for i = 0 to (size - 1)
+			project_list.add data_.item(i, col)
+		next
+	end function
+	
+	public function project_map (key, value)
+		set project_map = Map.new
+		dim i: for i = 0 to (size - 1)
+			project_map.add data_.item(i, key), iif(isNull(value), null, data_.item(i, value))
+		next
+	end function
+	
+	'public function project (fields)
+	'	dim arr: redim arr(size - 1, uBound(fields))
+	'	
+	'	dim i, j, val
+	'	
+	'	for j = 0 to uBound(fields)
+	'		val = fields(j)
+	'		if data_.fields.exists(val) then
+	'			for i = 0 to (size - 1)
+	'				arr(i, field) = data_.item(i, val)
+	'			next
+	'		else
+	'			for i = 0 to (size - 1)
+	'				arr(i, field) = val
+	'			next
+	'		end if
+	'	next
+	'	
+	'	project = arr
+	'end function
+end class
+
+class RSDataClass
+	
+	public data
+'		Array holding all data in the RecordSet. Indexed by record, then by
+'		field number.
+	
+	public fields
+'		Map from field names to field numbers. Used to fetch values	by field
+'		name.
+	
+	public size
+'		Number of records in array_
+	
+	public function init (ado_rs)
+		if ado_rs.eof then
+			size = 0
+		else
+			data = ado_rs.getRows
+			size =  uBound(data, 2) + 1
+			
+			with Map.new
+				dim i: for i = 0 to ado_rs.fields.count - 1
+					.add ado_rs.fields(i).name, i
+				next
+				
+				set fields = .immutable
+				
+			end with
+		end if
+		
+		set init = me
+	end function
+	
+	public property get item (index, field)
+		item = data(fields(field), index)
+	end property
+end class
+
+class LightRecordClass
+	private data_
+	
+	private index_
+'		Row index for this record
+	
+	public function init (data, index)
+'		Takes references to a data array and a field map and the value of this
+'		record's index. Returns me.
+		
+		set data_ = data
+		index_ = index
+		
+		set init = me
+	end function
+	
+	public default property get item (key)
+'		Returns the value of attribute key for this record.
+		
+		item = data_.item(index_, key)
+	end property
+	
+	public property get size
+		size = data_.field_count
+	end property
+	
+	public function keys
+		keys = fields_.keys
+	end function
+	
+	public function values
+		dim l: set l = List.new
+		dim k: for each k in keys
+			l.add data_set_(fields_(k), index_)
+		next
+		
+		values = l.to_array
+	end function
+	
+	public function iterator
+		set iterator = global("Iterator").for_map(me)
+	end function
+end class

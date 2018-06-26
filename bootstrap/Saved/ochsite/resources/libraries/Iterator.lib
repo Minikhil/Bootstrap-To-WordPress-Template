@@ -1,0 +1,389 @@
+
+'	VBScript has its share of collections, particularly strings and arrays, and
+'	these libraries only add more. Although every attempt has been made to be
+'	consistent with the new collections' interfaces and functionality, the
+'	existing VBScript types don't conform to much of anything.
+'	
+'	The primary purpose of this module is to provide a single, consistent
+'	interface to collections of all kinds, allowing common operations, such as
+'	getting sizes and iterating, to be performed in a generic manner without
+'	needing to know or specify the underlying type. The built-in types are
+'	special-cased in here so that, for the most part, they do not have to be
+'	special-cased elsewhere.
+'	
+'	For the purposes of this module, and the code that uses it, a "collection"
+'	is either a VBScript array or string, or a class that implements the
+'	following methods:
+'	
+'	-	size ()
+'		Returns the number of elements in the collection.
+'	
+'	-	item (key) -- default property
+'		Returns the value in the collection associated with the given key.
+'	
+'	-	iterator ()
+'		Returns an iterator for the keys and values of the collection.
+'	
+'	In addition to these basic requirements, a collection may be Array-like or
+'	Map-like. A collection is Array-like if it implements the following methods:
+'	
+'	-	item (index) -- default property
+'		As for an ordinary collection, but where index is any integer from zero
+'		to size - 1, inclusive.
+'	
+'	-	iterator ()
+'		As for an ordinary collection, but the iterator returned must yield its
+'		elements in numerical order.
+'	
+'	A given collection is Map-like if it implements the following methods:
+'	
+'	-	keys ()
+'		Returns a collection containing the keys of the given collection.
+'	
+'	-	values ()
+'		Returns a collection containing the values of the given collection.
+
+class IteratorModule
+	public function size (collection)
+'		Returns the size of collection. If collection is an Array or String,
+'		it uses the appropriate builtin; otherwise, it simply calls the
+'		collection's own size function.
+		
+		if isArray(collection) then
+			size = uBound(collection) + 1
+		elseif typename(collection) = "String" then
+			size = len(collection)
+		elseif isObject(collection) then
+			size = collection.size
+		end if
+	end function
+	
+	public default property get construct (iterable)
+'		Returns an iterator for the given iterable object. If iterable is an
+'		Array, then creates an ArrayIterator. If iterable is a String, then
+'		creates a StringIterator. Otherwise, calls iterable's iterator method.
+		
+		if isArray(iterable) then
+			set construct = for_array(iterable)
+		elseif typename(iterable) = "String" then
+			set construct = for_string(iterable)
+		elseif isObject(iterable) then
+			set construct = iterable.iterator
+		end if
+	end property
+	
+	public function for_array (a)
+'		Creates an ArrayIterator for the given array. Lets the ArrayIterator
+'		constructor figure out the size.
+		
+		set for_array = (new ArrayIteratorClass).init(a)
+	end function
+	
+	public function for_array_length (a, l)
+'		Creates an ArrayIterator for the given array, using the given size. I
+'		don't think this is used anywhere anymore, after the introduction of
+'		the size method providing a flexible and extensible way to get the size
+'		of a collection. I'll probably delete it later. If you are reading this
+'		comment, then obviously, I have not gotten around to it.
+		
+		set for_array_length = (new ArrayIteratorClass).init_with_length(a, l)
+	end function
+	
+	public function for_map (map)
+'		Creates a MapIterator for the given map.
+		
+		set for_map = (new MapIteratorClass).init(map)
+	end function
+	
+	public function for_string (str)
+'		Creates a StringIterator for the given string. If you give it a Str
+'		object, then it'll grab the raw string during construction.
+		
+		set for_string = (new StringIteratorClass).init(str)
+	end function
+	
+	public function dump (iterable)
+'		Prints out all elements of an iterable collection for debugging
+'		purposes. Shouldn't be used for "real" work, but a handy method to have
+'		around when coding.
+		
+		with construct(iterable)
+			do while .has_current
+				debug .key & ": " & .value
+				.move_next
+			loop
+		end with
+	end function
+end class
+dim Iterator: set Iterator = new IteratorModule
+
+class ArrayIteratorClass
+'	Iterates across an indexed collection. Yields indices as keys. Requires the
+'	following from the given collection:
+'
+'	-	Its size must either be given (in init_with_size) or be determinable by
+'		Iterable.size (in init). In practice, this requires a native array or an
+'		object with a size method.
+'	-	It must have a default getter taking indices from zero to size - 1,
+'		inclusive, that returns the values of the collection in some order.
+'	
+'	Commonly, the given collection will be either an Array or a List. Other
+'	compatible collections include the RecordSet (see Database.lib).
+
+	private arr_
+	private i_
+	private len_
+	
+	public function init (arr)
+		assign arr_, arr
+		i_ = 0
+		len_ = Iterator.size(arr_)
+		
+		set init = me
+	end function
+	
+	public function init_with_size (arr, ln)
+		assign arr_, arr
+		i_ = 0
+		len_ = ln
+		
+		set init = me
+	end function
+	
+	public function reset
+		i_ = 0
+	end function
+	
+	public function has_current
+		has_current = i_ < len_
+	end function
+	
+	public function move_next
+		assert has_current, "ArrayIterator.move_next: End of collection"
+		
+		i_ = i_ + 1
+	end function
+	
+	public function key
+		assert has_current, "ArrayIterator.key: End of collection"
+		
+		key = i_
+	end function
+	
+	public function value
+		assert has_current, "ArrayIterator.value: End of collection"
+		
+		assign value, arr_(i_)
+	end function
+	
+	public function pop
+		assign pop, value
+		i_ = i_ + 1
+	end function
+end class
+
+
+class MapIteratorClass
+'	Iterates across a collection mapping keys to values. Requires the following
+'	from the given collection:
+'
+'	-	It must have a keys method returning a collection of keys of the given
+'		collection. The keys collection must be iterable.
+'	-	It must have a default getter taking keys from the keys collection and
+'		returning the associated values.
+'	
+'	Commonly, the given collection will be a Map. Other compatible collections
+'	include the LightRecord (see Database.lib) and HeadersMap (Request.lib).
+
+	private map_
+	private keys_itr_
+	
+	public function init (map)
+		set map_ = map
+		set keys_itr_ = Iterator(map_.keys)
+		set init = me
+	end function
+	
+	public function reset
+		keys_itr_.reset
+	end function
+	
+	public function has_current
+		has_current = keys_itr_.has_current
+	end function
+	
+	public function move_next
+		assert has_current, "MapIterator.move_next: End of collection"
+		
+		keys_itr_.move_next
+	end function
+	
+	public function key
+		assert has_current, "MapIterator.key: End of collection"
+		
+		assign key, keys_itr_.value
+	end function
+	
+	public function value
+		assert has_current, "MapIterator.value: End of collection"
+		
+		assign value, map_(keys_itr_.value)
+	end function
+	
+	public function pop
+		assign pop, map_(keys_itr_.pop)
+	end function
+end class
+
+class StringIteratorClass
+	private str_
+	private i_
+	
+	public function init (str)
+		str_ = str
+		i_ = 1
+		
+		set init = me
+	end function
+	
+	public function reset
+		i_ = 1
+	end function
+	
+	public function has_current
+		has_current = (i_ <= len(str_))
+	end function
+	
+	public function move_next
+		i_ = i_ + 1
+	end function
+	
+	public function move (offset)
+		i_ = i_ + offset
+	end function
+	
+	public function key
+		key = i_
+	end function
+	
+	public function value
+		value = mid(str_, i_, 1)
+	end function
+	
+	public function values (n)
+		values = mid(str_, i_, n)
+	end function
+	
+	public function seek (target)
+'		If the target is found in the remainder of the string, advances the
+'		iterator to the beginning of the target, returning the the substring
+'		beginning at the previous position and ending before the target. If the
+'		target is not found, returns null and does not modify the iterator.
+		
+		dim j: j = inStr(i_, str_, target)
+		
+		if isNull(j) or j = 0 then
+			seek = null
+		else
+			seek = mid(str_, i_, j - i - 1)
+			i_ = j
+		end if
+	end function
+	
+	public function seek_after (target)
+'		As seek, but advances the iterator after the end of the target.
+		
+		seek_after = seek(target)
+		move(len(target))
+	end function
+end class
+
+class BinaryIteratorClass
+	private str_
+	private i_
+	
+	public function init (str)
+		str_ = str
+		i_ = 1
+		
+		set init = me
+	end function
+	
+	public function reset
+		i_ = 1
+	end function
+	
+	public function has_current
+		has_current = (i_ <= lenB(str_))
+	end function
+	
+	public function move_next
+		i_ = i_ + 1
+	end function
+	
+	public function move (offset)
+		i_ = i_ + offset
+	end function
+	
+	public function key
+		key = i_
+	end function
+	
+	public function value
+		value = midB(str_, i_, 1)
+	end function
+	
+	public function seek (target)
+'		If the target is found in the remainder of the string, advances the
+'		iterator to the beginning of the target, returning the the substring
+'		beginning at the previous position and ending before the target. If the
+'		target is not found, returns null and does not modify the iterator.
+		
+		dim j: j = inStrB(i_, str_, target)
+		
+		if isNull(j) or j = 0 then
+			seek = null
+		else
+			seek = midB(str_, i_, j - i - 1)
+			i_ = j
+		end if
+	end function
+	
+	public function seek_after (target)
+'		As seek, but advances the iterator after the end of the target.
+		
+		seek_after = seek(target)
+		move(lenB(target))
+	end function
+end class
+
+
+
+class DateTimeIterator
+	private current_
+	private finish_
+	private increment_
+	
+	public sub init (start, finish, increment)
+		set current_ = start
+		set finish_ = finish
+		set increment_ = increment
+	end sub
+	
+	public function has_current
+		has_current = (current_.cmp(finish_) <= 0)
+	end function
+	
+	public function move_next
+		set current_ = current_.plus(increment_)
+	end function
+	
+	public function value
+		set value = current_
+	end function
+	
+	public function pop
+		set pop = current_
+		set current_ = current_.plus(increment_)
+	end function
+end class

@@ -1,0 +1,400 @@
+<%
+	option explicit
+	
+	dim LF: LF = VBLF
+	
+	dim HERE: HERE = Request.ServerVariables("URL")
+	dim METHOD: METHOD = Request.ServerVariables("REQUEST_METHOD")
+	
+	function print (str)
+		if typeName(str) = "StringBuilderClass" then
+			str.print_each
+			exit function
+		end if
+		
+		dim start: start = 1
+		dim slash: slash = inStr(start, str, "\", 0)
+		
+		if slash = 0 then
+			Response.write str
+			exit function
+		end if
+		
+		dim length: length = len(str)
+		
+		do while slash > 0
+			Response.write mid(str, start, slash - start)
+			
+			select case mid(str, slash + 1, 1)
+				case "\": Response.write "\"
+				case "'": Response.write """"
+				case "n": Response.write VBLF
+				case "r": Response.write VBCR
+				case "t": Response.write VBTAB
+			end select
+			
+			start = slash + 2
+			slash = inStr(start, str, "\", 0)
+		loop
+		
+		Response.write right(str, length - start + 1)
+	end function
+	
+	function exists (var)
+		if isObject(var) then
+			exists = not (var is nothing)
+		else
+			exists = not (isNull(var) or isEmpty(var))
+		end if
+	end function
+	
+	' Simulates an inline if statement.
+	' 
+	' Evaluates to one expression if the predicate is true, the other if false.
+	' Note that both statements will be executed in any case, so not suited to
+	' resource-intensive operations.
+	' 
+	' @param predicate the predicate.
+	' @param truepart  the value returned if predicate is true
+	' @param falsepart the value returned if predicate is false
+	' @return          either truepart or falsepart, depending on expression
+	function iif (predicate, truepart, falsepart)
+		if predicate = true then
+			assign iif, truepart
+		else
+			assign iif, falsepart
+		end if
+	end function
+	
+	' Evaluates to a given expression or empty depending on predicate.
+	' 
+	' If predicate is true, then iff returns truepart. Otherwise, returns empty.
+	' 
+	' @param predicate the predicate
+	' @param truepart  the value returned of predicate is true
+	' @return          either truepart or empty, depending on predicate
+	function iff (predicate, truepart)
+		if predicate = true then
+			assign iff, truepart
+		else
+			iff = empty
+		end if
+	end function
+	
+	function coalesce (term, alternative)
+		if exists(term) then
+			assign coalesce, term
+		else
+			assign coalesce, alternative
+		end if
+	end function
+	
+	function assign(byref lvalue, rvalue)
+		if isObject(rvalue) then
+			set lvalue = rvalue
+		else
+			lvalue = rvalue
+		end if
+	end function
+	
+	' Evaluates the argument at almost-global scope.
+	' 
+	' Intended to get around the lack of proper namespaces and case-sensitivity in
+	' VBScript. The expression is evaluates in the scope of the global function,
+	' which is as close to true global scope as possible. It's an inefficient hack,
+	' but it saves some headaches elsewhere.
+	' 
+	' @param name the expression to be evaluated at near-global scope. Must
+	'             evaluate to a primitive.
+	' @see        global_object
+	function global (name)
+		assign global, eval(name)
+	end function
+	
+	' Performs simple string substitution and interpolation, printing the result.
+	' 
+	' Uses StringUtil.format, SubstitutionFormatter, and Printer to perform simple
+	' string formatting and interpolation in a printf-like manner. The result is
+	' printed.
+	' 
+	' @param template a template string formatter as per SubstitutionFormatter.
+	' @param args     an array of items to be interpolated into the result.
+	' @see            SubstitutionFormatter
+	function prints (template, args)
+		StringUtil.format template, Iterator.for_array(args), SubstitutionFormatter, Printer
+	end function
+	
+	' Performs simple string substitution and interpolation, returning the result.
+	' 
+	' Uses StringUtil.format, SubstitutionFormatter, and StringBuilder to perform
+	' simple string formatting and interpolation in a printf-like manner. The
+	' result is returned.
+	' 
+	' @param template a template string formatter as per SubstitutionFormatter.
+	' @param args     an array of items to be interpolated into the result.
+	' @see            SubstitutionFormatter
+	function sprints (template, args)
+		sprints = StringUtil.format(template, Iterator.for_array(args), SubstitutionFormatter, StringBuilder())
+	end function
+	
+	' Performs simple string substitution and interpolation for StringUtil.format
+	class SubstitutionFormatterClass
+		
+		' 
+		' 
+		' @param char the template character.
+		' @param data an iterator containing data to be interpolated.
+		' @see        StringUtil.format
+		public function format (char, data)
+			select case char
+				case "\": format = "\"
+				case "'": format = """"
+				case "n": format = LF
+				case "$": format = data.value: data.move_next
+			end select
+		end function
+	end class
+	dim SubstitutionFormatter: set SubstitutionFormatter = new SubstitutionFormatterClass
+	
+	class PrinterClass
+		public function add (part)
+			Response.write part
+		end function
+		
+		public default property get result
+			result = null
+		end property
+	end class
+	dim Printer: set Printer = new PrinterClass
+	
+	
+	function var_dump (vars)
+		dim var
+		dim format: set format = StringBuilder()
+		dim args: set args = StringBuilder()
+		
+		for each var in vars
+			format.add var
+			format.add ": [\$]<br>"
+			args.add var
+		next
+		
+		var_dump = sprints("prints \'<br>\$\', Array(\$)", Array(format, args.delimited(",")))
+	end function
+	
+	class ImportClass
+		private libraries_
+		private filesystem_
+		
+		private path_array_
+		private path_length_
+		
+		private sub CLASS_INITIALIZE
+			set libraries_ = Server.createObject("Scripting.Dictionary")
+			set filesystem_ = Server.createObject("Scripting.FileSystemObject")
+			
+			dim path_parts: path_parts = split(HERE, "/")
+			path_length_ = uBound(path_parts)
+			redim path_array_(path_length_)
+			dim i: for i = 1 to path_length_
+				path_array_(i) = path_array_(i - 1) & "/" & path_parts(i)
+			next
+		end sub
+		
+		function library (name)
+			if not libraries_.exists(name) then
+				dim path: path = Server.mapPath(resource_path(name, "libraries", "lib"))
+				
+				with filesystem_.openTextFile(path, 1)
+					on error resume next
+					executeGlobal .readAll
+					if err.number <> 0 then prints "Error importing library \$", Array(path)
+					on error goto 0
+				end with
+				
+				libraries_.add name, null
+			end if
+		end function
+		
+		public function resource_path (name, subfolder, extension)
+			dim suffix: suffix = "/resources/" & subfolder & "/" & name & "." & extension
+			dim i: for i = path_length_ to 0 step -1
+				resource_path = path_array_(i) & suffix
+				if filesystem_.fileExists(Server.mapPath(resource_path)) then exit function
+			next
+		end function
+		
+		public function stylesheet (name, media)
+			dim path: path = resource_path(name, "stylesheets", "css")
+			prints "<link rel='stylesheet' type='text/css' href='\$' media='\$'>\n", Array(path, media)
+		end function
+		
+		public function image (name, extension, alt)
+			dim path: path = resource_path(name, "images", extension)
+			prints "<img src='\$' alt='\$' type='image/\$'>", Array(path, alt, extension)
+		end function
+		
+		public function include (name)
+			Server.execute(resource_path(name, "includes", "inc"))
+			
+			'dim path, file, stream
+			'
+			'path = Server.mapPath(resource_path(name, "includes", "inc"))
+			'set stream = filesystem_.getFile(path).openAsTextStream(1)
+			'
+			'on error resume next
+			'exec stream.readAll
+			'if err.number <> 0 then prints "Error including file \$", Array(path)
+			'stream.close: set stream = nothing
+			'on error goto 0
+			'
+		end function
+	end class
+	dim Import: set Import = new ImportClass
+	
+	class StringUtilModule
+		function sentence_case (str)
+			sentence_case = uCase(left(str, 1)) & lCase(mid(str, 2))
+		end function
+		
+		function identifier_case (str)
+			identifier_case = replace(lCase(str), " ", "_")
+			identifier_case = replace(identifier_case, "/", "-")
+		end function
+		
+		function humanize (identifier)
+			dim words: words = split(identifier, "_")
+			dim i: for i = 0 to uBound(words)
+				words(i) = sentence_case(words(i))
+			next
+			humanize = join(words, " ")
+		end function
+		
+		function pad (str, width)
+			pad = space(width - len(str)) & str
+		end function
+		
+		' A generalized printf-like function.
+		' 
+		' 
+		function format (template, byref data, formatter, target)
+			dim i, j, length, char, pad, part, width, part_len
+			length = len(template)
+			
+			do while i < length
+				i = i + 1
+				j = inStr(i, template, "\", 0)
+				if j > 0 then
+					target.add mid(template, i, j - i)
+					j = j + 1
+					i = j
+					char = mid(template, i, 1)
+					
+					if isNumeric(char) then
+						pad = iif(char = 0, "0", " ")
+						do
+							i = i + 1
+							char = mid(template, i, 1)
+						loop while isNumeric(char)
+						width = int(mid(template, j, i - j))
+					else
+						width = null
+					end if
+					
+					part = formatter.format(char, data)
+					
+					if isNull(width) then
+						target.add part
+					else
+						part_len = len(part)
+						if part_len < width then
+							target.add string(width - part_len, pad)
+							target.add part
+						else
+							target.add left(part, width)
+						end if
+					end if
+				else
+					target.add right(template, length - i + 1)
+					i = length
+				end if
+			loop
+			
+			format = target
+		end function
+	end class
+	dim StringUtil: set StringUtil = new StringUtilModule
+	
+	class IntUtilModule
+		function round_up (n)
+			round_up = -1 * (int(-1 * n))
+		end function
+		
+		function round_down (n)
+			round_down = int(n)
+		end function
+		
+		function round_down_to_multiple (n, m)
+			round_down_to_multiple = int(n / m) * m
+		end function
+		
+		function pad (n, width)
+			pad = string(width - len(n), "0") & n
+		end function
+		
+		function humanize(n)
+			dim i: for i = len(n) - 2 to 2 step -3
+				humanize = ("," & mid(n, i, 3)) & humanize
+			next
+			humanize = mid(n, 1, i + 2) & humanize
+		end function
+		
+		function max (n, m)
+			max = iif(m > n, m, n)
+		end function
+	end class
+	dim IntUtil: set IntUtil = new IntUtilModule
+	
+	class ArrayUtilModule
+		function html_dump (arr)
+			dim val
+			for each val in arr
+				prints "'\$'<br>\n", Array(val)
+			next
+		end function
+	end class
+	dim ArrayUtil: set ArrayUtil = new ArrayUtilModule
+	
+	
+	class FileSystemSingleton
+		private fso_
+		
+		private sub class_initialize
+			set fso_ = Server.createObject("Scripting.FileSystemObject")
+		end sub
+		'Path Operations
+		'  BuildPath (concat)
+		'  GetAbsolutePathName (MODIFIED to server root)
+		'  GetBaseName (/foo/bar.baz => bar)
+		'  GetExtensionName (/foo/bar.baz => baz)
+		'  GetFileName (/foo/bar.baz => bar.baz)
+		'  GetParentFolderName (/foo/bar.baz => foo)
+		
+		'File/Folder Operations
+		'  Copy
+		'  Delete
+		'  Exists
+		'  Get
+		'  Move
+		
+		'CreateFolder
+		'CreateTextFile
+		'GetTempName
+		'OpenTextFile
+	end class
+	dim FileSystem: set FileSystem = new FileSystemSingleton
+	
+	
+	Import.library "StringBuilder"
+	Import.library "Iterator"
+%>

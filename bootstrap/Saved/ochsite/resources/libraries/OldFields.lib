@@ -1,0 +1,96 @@
+class Field
+	private form_ 'The form to which the field belongs'
+	
+	private name_ 'The name of the field, used for the HTML name and id'
+	private label_ 'HTML label, defaults to humanized name'
+	private kind_
+	private value_ 'The value held by the field, taken from Request.Form'
+	private db_field_
+	private db_value_
+	
+	private formatter_
+	private valid_
+	
+	public property get name:            name = name_:               end property
+	
+	public property get value:           value = value_:             end property
+	public property let value (val):     value_ = val:               end property
+	
+	public property get db_value:        db_value = db_value_:       end property
+	public property let db_value (val):  db_value_ = val:            end property
+	
+	public property get label:           label = label_:             end property
+	public property let label (val):     label_= val:                end property
+	
+	public property get kind:            kind = kind_:               end property
+	public property let kind (val):      kind_ = val:                end property
+	
+	public property get db_field:        db_field = db_field_:       end property
+	public property let db_field (val):  db_field_ = val:            end property
+	
+	public property get formatter:       set formatter = formatter_: end property
+	public property set formatter (val): set formatter_ = val:       end property
+	
+	public function init (form, name)
+		set form_ = form
+		name_ = name
+		label_ = Str(name).humanize
+		db_field_ = name
+		value_ = coalesce(Request.form(name), empty)
+		db_value_ = value_
+		valid_ = true
+	end function
+	
+	public function print
+		printf "<li class='field %s%s'>", Array(kind_, iff(METHOD = "POST" and not valid_, " invalid"))
+		formatter_.print me
+		Response.write "</li>"
+	end function
+	
+	public function validate_required
+		if value_ = "" then error("is required")
+	end function
+	
+	public function validate_format (pattern)
+		dim regex: set regex = new RegExp
+		regex.pattern = pattern
+		if not (value_ = "" or regex.test(value_)) then
+			error("is not formatted correctly")
+		end if
+	end function
+	
+	public function validate_date
+		dim regex: set regex = new RegExp
+		regex.pattern = "\d\d?/\d\d?/\d\d(\d\d)?"
+		
+		if value <> "" then
+			if not regex.test(value_) then
+				error("is not formatted correctly")
+			elseif not isDate(value_) then
+				error("is not a valid date")
+			else
+				db_value_ = Date.from_string(value_).iso
+			end if
+		end if
+	end function
+	
+	public function validate_time
+		dim regex: set regex = new RegExp
+		regex.pattern = "\d\d?:\d\d( [AaPp][Mm])?"
+		
+		if value <> "" then
+			if not regex.test(value_) then
+				error("is not formatted correctly")
+			elseif not isDate(value_) then
+				error("is not a valid time")
+			else
+				db_value_ = Time.from_string(value_).iso
+			end if
+		end if
+	end function
+	
+	public function error (message)
+		valid_ = false
+		form_.error(label & " " & message)
+	end function
+end class

@@ -1,0 +1,23 @@
+
+class ExampleClass
+	private foo_
+'		All instance variables should be private. VBScript's encapsulation is
+'		sketchy enough without exposing public variables. Note the underscore
+'       naming convention - underscores aren't allowed at the beginning of
+'       names.
+	
+	public function init (foo)
+		foo_ = foo
+		
+		set init = me
+		' This allows for more concise initialization. For an example, see the
+		' `new` method below.
+	end function
+end class
+
+class ExampleModule
+	public property get [new] (foo)
+		set [new] = (new ExampleClass).init(foo)
+	end property
+end class
+dim Example: set Example = new ExampleModule

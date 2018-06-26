@@ -1,0 +1,38 @@
+class ManagedDataType
+	public default property construct
+		
+	end property
+end class
+
+class ManagedDataClass
+	private data_
+	
+	public property get value
+		execute setter("value", "data_")
+	end property
+	
+	public property let value
+		
+	end property
+	
+	public property set value
+		
+	end property
+	
+	public property get valid
+		
+	end property
+	
+	public property get serialized
+		
+	end property
+	
+	public property let serialized
+		
+	end property
+end class
+
+class ManagedDataModule
+	
+end class
+dim ManagedData: set ManagedData = new ManagedDataModule

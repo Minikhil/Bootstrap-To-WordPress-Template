@@ -1,0 +1,81 @@
+%<class Field_OptionalData
+	private data_
+	
+	public property get value
+		assign value, data_.value
+	end property
+	
+	public property get valid
+		valid = isEmpty(data_) or data_.valid
+	end property
+	
+	public property get http
+		http = data_.http
+	end property
+	
+	public property let http (data)
+		data_.http = data
+	end property
+	
+	public property get db
+		db = data_.db
+	end property
+	
+	public property let db (data)
+		data_.db = data
+	end property 
+end class
+
+class Field_TextData
+	private str_
+	
+	public property get value
+		value = iff(str_ <> empty, str_)
+	end property
+	
+	public property get http
+		http = str_
+	end property
+	
+	public property let http (data)
+		str_ = data
+	end property
+	
+	public property get db
+		db = str_
+	end property
+	
+	public property let db (data)
+		str_ = data
+	end property
+end class
+
+class Field_DateData
+	private value_
+	
+	public property get value
+		set value = value_
+	end property
+	
+	public property get http
+		http = value_.sprintf("\m/\d/\y")
+	end property
+	
+	public property let http (data)
+		set value_ = Date.from_string(data)
+		if value_ is nothing then
+			http = null
+		end if
+	end property
+	
+	public property get db
+		to_db = value_.iso
+	end property
+	
+	public property let db (data)
+		set value_ = Date.from_iso(data)
+		if value_ is nothing then
+			http = null
+		end if
+	end property
+end class%>

@@ -1,0 +1,53 @@
+<%
+
+class ImportFunction
+	private libraries_
+	'	A Dictionary used as a Set (i.e. with all values null) which
+	'	contains all libraries that have been imported. This allows the
+	'	import function to prevent the same library from being loaded
+	'	twice, which would cause errors.
+	
+	private sub CLASS_INITIALIZE
+		set libraries_ = Server.createObject("Scripting.Dictionary")
+	end sub
+	
+	public default property get library (name)
+	'	Imports a library using executeGlobal. Uses libraries_ to ensure
+	'	that no library is included more than once.
+	
+		if not libraries_.exists(name) then
+			
+			dim lib_path: set lib_path = Path.resource_path(name & ".lib", "libraries")
+			
+			on error resume next
+			with FileSystem.open(lib_path, "")
+				executeGlobal .readAll
+				if Err.number <> 0 then 
+					Response.write "Error importing library "
+					Response.write lib_path & "<br>"
+					Response.write Err.source & ": " & Err.description
+				end if
+			end with
+			on error goto 0
+			
+			libraries_.add name, null
+		end if
+	end property
+	
+	public function include (name)
+	'	Includes a file using Server.execute. The included file will
+	'	not have access to code from the including file.
+	
+		dim file_path: set file_path = Path.resource_path(name & ".inc", "includes")
+		
+		Server.execute file_path
+	end function
+	
+	public function stylesheet (name)
+		dim file_path: set file_path = Path.resource_path(name & ".css", "stylesheets")
+		
+		printf "<link rel='stylesheet' type='text/css' href='%s'>", Array(file_path)
+	end function
+end class
+dim import: set import = new ImportFunction
+%>

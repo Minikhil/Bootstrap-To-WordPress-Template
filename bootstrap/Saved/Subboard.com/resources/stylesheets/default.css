@@ -1,0 +1,333 @@
+/* Sorry about the mess. This stylesheet is designed to PERFECTLY replicate a table-based layout that uses pixel units.
+   When everything is converted to this CSS layout, I can de-kludge it. */
+
+*
+{
+	margin: 0;
+	padding: 0;
+}
+
+body
+{
+	width: 572px;
+	margin: 13px auto 2em;
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+a, a:link, a:visited
+{
+	color: inherit;
+	text-decoration: none;
+}
+
+a:hover
+{
+	text-decoration: none;
+	color: #5a0000;
+}
+
+img
+{
+	display: block;
+}
+
+.hidden
+{
+	display: none;
+}
+
+/******************************************************************************** Image Replacement */
+
+/* Phark method. See http://www.mezzoblue.com/tests/revised-image-replacement/#phark2 */
+
+.image-replacement
+{
+	display: block;
+	text-indent: -5000px;
+}
+
+h1 a.image-replacement
+{
+	height: 32px;
+	width: 97px;
+	background: url(/resources/images/sbi_logo.gif) no-repeat;
+}
+
+#home a.image-replacement
+{
+	height: 32px;
+	width: 71px;
+	background: url(/resources/images/sbi_bottom_logo.gif) no-repeat;
+}
+
+/******************************************************************************** Headers */
+
+h1
+{
+	float: right;
+}
+
+form#form1
+{
+	clear: right;
+	float: right;
+	margin-top: 0px;
+}
+
+form#form1 select
+{
+	width: 188px;
+}
+
+h2
+{
+	float: left;
+	margin: 32px 0 12px 6px;
+}
+
+h2 a
+{
+	font-size:  20px;
+	font-weight: normal !important;
+	color: #0c3c61 !important;
+	text-decoration: none;
+}
+
+h2 .domain
+{
+	font-size: 14px;
+}
+
+/******************************************************************************** Top navigation */
+
+ul#categories, ul#subcategories
+{
+	width: 100%;
+	list-style: none;
+}
+
+ul#categories li, ul#subcategories li
+{
+	float: left;
+	width: auto;
+	text-align: center;
+}
+
+ul#categories
+{
+	clear: both;
+	height: 30px;
+	background-color: #6699ff;
+	font-weight: bold;
+}
+
+ul#categories li
+{
+	margin-top: 7px;
+}
+
+ul#categories a
+{
+	color: #00387f;
+	text-decoration: none;
+}
+
+ul#categories a:hover, ul#categories a.current, ul#subcategories a:hover, ul#subcategories a.current
+{
+	color: white;
+}
+
+ul#subcategories
+{
+	clear: both;
+	height: 15px;
+	background-color: #4477dd;
+	font-size: 9px;
+}
+
+ul#subcategories li
+{
+	width: 25%;
+	margin-top: 1px;
+}
+
+ul#subcategories a
+{
+	color: #0c3c61;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+/******************************************************************************** Main content area */
+
+div.google_map
+{
+	width: 470px;
+	height: 470px;;
+	margin: 1em 0;
+}
+
+div#content
+{
+	clear: both;
+	width: 470px;
+}
+
+div.clear /* I know it's ugly, but so is IE. Sorry. */
+{
+	clear: both;
+	height: 1px;
+}
+
+object.chat
+{
+	width: 400px;
+	height: 300px;
+	margin-top: 1em;
+}
+
+form
+{
+	margin-top: 1em;
+}
+
+label
+{
+	display: block;
+	float: left;
+	clear: left;
+}
+
+fieldset label
+{
+	display: inline;
+	float: none;
+	clear: none;
+}
+
+input
+{
+	display: block;
+	margin: 0 0 .5em 8em;
+}
+
+input[type=radio], input.radio, .radio input, label.radio
+{
+	display: inline !important;
+	margin: 0;
+}
+
+fieldset
+{
+	border: 0;
+	margin-left: 2.5em;
+}
+
+table
+{
+	margin: 1em auto 0;
+	border: 1px solid #cfd6e9;
+	border-width: 1px 1px 0 0;
+}
+
+td, th
+{
+	padding: .2em;
+	border: 1px solid #cfd6e9;
+	border-width: 0 0 1px 1px;
+}
+
+col.price
+{
+	text-align: right;
+}
+
+caption
+{
+	margin-top: 1em;
+	width: 100%;
+}
+
+/* IE doesn't get it, of course, but that doesn't really hurt. */
+caption:before
+{
+	content: "Table: ";
+}
+
+/******************************************************************************** Footer */
+
+div#footer
+{
+	clear: both;
+	border-top: 1px solid #cfd6e9;
+}
+
+div#home
+{
+	float:left;
+	margin: 5px 0 6px 15px;
+}
+
+ul.divisions1, ul.divisions2
+{
+	clear:right;
+	float: right;
+	width: 471px;
+	list-style: none;
+	font-size: 11px;
+}
+
+ul.divisions1 li, ul.divisions2 li
+{
+	float:left;
+	border-left: 1px solid #14548f;
+	
+	margin: 6px 0 4px;
+	
+	padding: 0 10px 2px;
+	line-height: 9px;
+}
+
+ul.divisions1 li.first, ul.divisions2 li.first
+{
+	border-left: none;
+	padding-left: 0;
+}
+
+ul.divisions1 a, ul.divisions2 a
+{
+	font-weight: normal;
+	text-decoration: none;
+	color: #0c4c87;
+}
+
+ul.divisions1 a:hover, ul.divisions2 a:hover
+{
+	color: #175cff;
+}
+
+ul.divisions2
+{
+	border-top: 1px solid #cfd6e9;
+}
+
+div.byline
+{
+	clear:both;
+	border-top: 1px solid #cfd6e9;
+	padding: 2px 0 0 101px;
+	font-size: 10px;
+	color: #426e96;
+}
+
+div.byline a
+{
+	color: #426e96;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+div.byline a:hover
+{
+	color: #175cff;
+}

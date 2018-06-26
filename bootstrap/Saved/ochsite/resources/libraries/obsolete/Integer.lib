@@ -1,0 +1,72 @@
+'class IntUtilModule
+'	function pad (n, width)
+'		pad = string(width - len(n), "0") & n
+'	end function
+'	
+'	function max (n, m)
+'		max = iif(m > n, m, n)
+'	end function
+'end class
+'dim IntUtil: set IntUtil = new IntUtilModule
+
+class IntClass
+	private value_
+	
+	public function init (val)
+		if val >= fix(val) then
+			value_ = fix(val)
+		else
+			value_ = fix(val - 1)
+		end if
+		
+		set init = me
+	end function
+	
+	public default property get value
+		value = value_
+	end property
+	
+	public property let value (val)
+		value_ = val
+	end property
+	
+	public function humanize
+		humanize = formatNumber(value_, 0, -2, 0, -1)
+	end function
+	
+	public function marshall
+		marshall = value_
+	end function
+end class
+
+class IntModule
+	private non_digits_re_
+	
+	public default property get construct (val)
+		set construct = (new IntClass).init(val)
+	end property
+	
+	public function parse (val)
+		if isEmpty(digits_re_) then
+			set non_digits_re_ = new RegExp
+			non_digits_re_.pattern = "[^\d]*"
+			non_digits_re_.global = true
+		end if
+		
+		on error resume next
+		dim munged: munged = cLng(non_digits_re_.replace(val, vbNullString))
+		on error goto 0
+		
+		if isEmpty(munged) then
+			err.clear
+			parse = null
+		else
+			set parse = construct(munged)
+		end if
+	end function
+	
+	public function unmarshall (data)
+		set unmarshall = construct(data)
+	end function
+end class
+dim Int: set Int = new IntModule

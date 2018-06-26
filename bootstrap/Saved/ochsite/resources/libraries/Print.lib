@@ -1,0 +1,225 @@
+import "Regex"
+
+function debug (s)
+	with Debugger
+		.print s
+	end with
+end function
+
+function debugf (format, args)
+	with Debugger
+		.printf format, args
+	end with
+end function
+
+function print (str)
+	Output.print str
+end function
+
+class DebugOutputEphemeron
+	private open_
+	
+	private sub class_initialize
+		Response.Write "<div class='debug'>"
+		open_ = true
+	end sub
+	
+	private sub class_terminate
+		close
+	end sub
+	
+	public function write (s)
+		dim vt: vt = varType(s)
+		
+		dim t: for each t in Array(vbString, vbInteger, vbLong, vbSingle, vbDouble, vbDate, vbBoolean)
+			if t = vt then
+				Response.Write h(s)
+				exit function
+			end if
+		next
+		Response.Write h("<" & typename(s) & ">")
+	end function
+	
+	public function close
+		if open_ then
+			Response.Write "</div>"
+			open_ = false
+		end if
+	end function
+end class
+
+function Debugger
+	set Debugger = (new OutputStreamClass).init(new DebugOutputEphemeron)
+end function
+
+function h (str)
+	h = Server.HTMLEncode(str)
+end function
+
+function printf(template, args)
+	Output.printf template, args
+end function
+
+class OutputStreamModule
+	public function [new] (target)
+		set [new] = (new OutputStreamClass).init(target)
+	end function
+end class
+dim OutputStream: set OutputStream = new OutputStreamModule
+
+class OutputStreamClass
+	private out_
+	
+	public function init (out)
+		set out_ = out
+		
+		set init = me
+	end function
+	
+	public function close
+		' do nothing
+	end function
+	
+	public function write (s)
+		out_.write s
+	end function
+	
+	public function print (s)
+		write s
+		
+		set print = me ' method chaining
+	end function
+	
+	private function digits (value, precision)
+		digits = cStr(value)
+		if precision > len(digits) then
+			digits = string(precision - len(digits), "0") & digits
+		elseif precision = 0 and value = 0 then
+			digits = vbNullString
+		end if
+	end function
+	
+	public function printf (template, args)
+		dim data, output
+		dim parameter, flags, width, precision, format, rest
+		dim matches, m, s
+		
+		dim itr: set itr = Iterator(args)
+		
+		set matches = Regex.new("%(?:(.)\$)?(['\-+ #0!]*)(\*|\d+)?(?:\.(\*|\d+))?([a-zA-Z%])([^%]*)").find_all(template)
+		if matches.count = 0 then
+			print template
+		else
+			print left(template, matches(0).firstIndex)
+			for each m in matches
+				set s = m.subMatches
+				parameter = s(0)
+				flags     = s(1)
+				width     = fix(s(2))
+				precision = s(3)
+				format    = lcase(s(4))
+				rest      = s(5)
+				
+				if format = "%" then
+					print "%"
+				elseif instr(flags, "\") then
+					print Str.literal("\" & format)
+				else
+					if width     = "*"    then width     = itr.pop
+					if precision = "*"    then precision = itr.pop
+					
+					if isEmpty(parameter) then
+						data = itr.pop
+					else
+						data = args(parameter - 1)
+					end if
+					
+					if format = "i" then format = "d"
+					
+					select case format
+						case "c"
+							output = chrW(data)
+						
+						case "s"
+							if isEmpty(precision) then
+								output = data
+							else
+								output = left(data, precision)
+							end if
+						
+						case "d":
+							output = digits(abs(data), precision)
+							
+							if inStr(flags, "'") then
+								output = join(Str(output).slice_right(3), ",")
+							end if
+							
+							if value_ < 0 then
+								output = "-" & output
+							else
+								if inStr(flags, "+") then
+									output = "+" & output
+								elseif inStr(flags, " ") then
+									output = " " & output
+								end if
+							end if
+						
+						case "u"
+							output = digits(abs(data), precision)
+							
+							if inStr(flags, "'") then
+								output = join(Str(output).slice_right(3), ",")
+							end if
+						
+						case "o"
+							output = digits(oct(data), precision)
+							if inStr(flags, "#") and left(output, 0) <> "0" then output = "0" & output
+						
+						case "x"
+							output = digits(hex(data))
+							if inStr(flags, "#") then output = "0X" & output
+						
+						case "f"
+							if isEmpty(precision) then precision = 6
+							output = formatNumber(data, precision, TristateTrue, TristateFalse, Tristate(inStr(flags, "'")))
+							if precision = 0 then output = output & "."
+							
+							if data >= 0 then
+								if inStr(flags, "+") then
+									output = "+" & output
+								elseif inStr(flags, " ") then
+									output = " " & output
+								end if
+							end if
+					end select
+					
+					if inStr("xeg", format) and format = s(4) then output = lcase(output)
+					
+					if width > len(output) then
+						if inStr(flags, "-") then 'left-justify
+							output = output & space(width - len(output))
+						else 'right-justify
+							if isEmpty(precision) and inStr(flags, "0") then
+								output = string(width - len(output), "0") & output
+							else
+								output = space(width - len(output)) & output
+							end if
+						end if
+					end if
+					
+					if inStr(flags, "!") then
+						output = Server.HTMLEncode(output)
+					end if
+					
+					print output
+				end if
+				
+				print rest
+			next
+		end if
+		
+		set printf = me ' method chaining
+	end function
+end class
+
+dim Output: set Output = OutputStream.new(Response)

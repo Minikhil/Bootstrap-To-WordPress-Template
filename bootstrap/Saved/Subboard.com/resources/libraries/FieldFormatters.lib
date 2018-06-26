@@ -1,0 +1,83 @@
+class TextInputFormatter
+	public function print (field)
+		FieldFormatters.print_label field
+		printf "<input type='text' name='%s' id='%s' value='%s'>", Array(field.name, field.name, field.value)
+	end function
+end class
+
+class TextAreaFormatter
+	public function print (field)
+		FieldFormatters.print_label field
+		printf "<textarea name='%s' id='%s'>%s</textarea>", Array(field.name, field.name, field.value)
+	end function
+end class
+
+class SubmitFormatter
+	public function print (field)
+		printf "<button type='submit' name='%s' id='%s' value='%s'>%s</button>", Array(field.name, field.name, field.name, field.label)
+	end function
+end class
+
+class HiddenFormatter
+	public function print (field)
+		FieldFormatters.print_label field
+		printf "<input type='hidden' name='%s' value='%s'>", Array(field.name, field.value)
+	end function
+end class
+
+class SelectFormatter
+	private iterator_
+	private multiple_
+	
+	private sub class_initialize
+		multiple_ = false
+	end sub
+	
+	public sub init (itr)
+		set iterator_ = itr
+	end sub
+	
+	public property set multiple (bool)
+		multiple_ = bool
+	end property
+	
+	public function print (field)
+		FieldFormatters.print_label field
+		printf "<select name='%s' id='%s'%s>", Array(field.name, field.name, iff(multiple_, " multiple=''"))
+		with iterator_
+			do while .has_current
+				printf "<option value='%s'%s>%s</option>", Array(.key, iff(field.value = .value, " selected='' "), .value)
+				.move_next
+			loop
+		end with
+		Response.write "</select>"
+	end function
+end class
+
+class FieldFormattersModule
+	public function text_input
+		set text_input = new TextInputFormatter
+	end function
+	
+	public function text_area
+		set text_area = new TextAreaFormatter
+	end function
+	
+	public function submit
+		set submit = new SubmitFormatter
+	end function
+	
+	public function hidden
+		set hidden = new HiddenFormatter
+	end function
+	
+	public function select_one (iterator)
+		set select_one = new SelectFormatter
+		select_one.init iterator
+	end function
+	
+	public function print_label (field)
+		printf "<label for='%s'>%s</label>", Array(field.name, field.label)
+	end function
+end class
+dim FieldFormatters: set FieldFormatters = new FieldFormattersModule

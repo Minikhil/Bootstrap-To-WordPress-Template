@@ -1,0 +1,62 @@
+Util.import "DB"
+Util.import "Datetime"
+Util.import "Iterator"
+
+class WRUBModule
+	private current_show_
+	private default_show_
+	private db_
+	private middle_of_the_night_
+	
+	private sub class_initialize
+		set current_show_ = nothing
+		set default_show_ = nothing
+		set db_ = global_object("DB").connect("/wrub2/resources/databases/wrub.mdb")
+		set middle_of_the_night_ = Datetime.time(5, 0, 0)
+	end sub
+	
+	public property get DEFAULT_SHOW_ID
+		DEFAULT_SHOW_ID = 1
+	end property
+	
+	public property get MIDDLE_OF_THE_NIGHT
+		set MIDDLE_OF_THE_NIGHT = middle_of_the_night_
+	end property
+	
+	public property get db
+		set db = db_
+	end property
+	
+	public property get default_show
+		if default_show_ is nothing then
+			set default_show_ = db.query("select * from Programs where id=?", Array(DEFAULT_SHOW_ID))
+		end if
+		set default_show = default_show_
+	end property
+	
+	public property get current_show
+		if current_show_ is nothing then
+			dim rs: set rs = db.query( _
+				"select * from Schedulings left join Programs on Schedulings.program_id = Programs.id where day_of_week=? and time <= ? order by time desc", _
+				Array(3, Datetime.now.iso) _
+			)
+			
+			if rs.eof then
+				set current_show_ = default_show
+			else
+				dim show_time: set show_time = Datetime.iso_time(rs("time"))
+				dim duration: set duration = TimeSpan.iso_time(rs("duration"))
+				
+				dim end_time: set end_time = show_time.plus(duration)
+				
+				if end_time.cmp(Datetime.now) > 0 then
+					set current_show_ = rs
+				else
+					set current_show_ = default_show
+				end if
+			end if
+		end if
+		set current_show = current_show_
+	end property
+end class
+dim WRUB: set WRUB = new WRUBModule

@@ -1,0 +1,44 @@
+<!-- #include virtual='/resources/libraries/util2.lib' -->
+<%
+	dim category: category = "Deadlines"
+%>
+
+<!-- #include virtual='/resources/includes/doctype.inc' -->
+
+<html lang='en-us'>
+	<head>
+		<!-- #include virtual='/insurance/resources/includes/head.inc' -->
+	</head>
+	<body>
+		<!-- #include virtual='/insurance/resources/includes/header.inc' -->
+		
+		<div id='content'>
+			<h2>Deadlines</h2>
+			<p>
+		<strong><font size ="3">Failure to complete the online waiver process by the dates below will result in the student being automatically enrolled in the school health insurance plan, and the applicable premium remaining on the student's account.</font></strong></p>
+		<h3>Waiver Deadline</h3>
+		
+		<ul>
+		<li>October 4, 2011 &ndash;  for students whose academic year begins in August 2011.</li>
+		<!--<li>February 7, 2012 &ndash;  for <b>NEW</b> Spring students enrolling at the University in the 2012 Spring semester</li>-->
+		<li>The Spring 2012 waiver deadline for <b>NEW</b> Spring students is February 7, 2012.</li>
+		<li>The on-line waiver window for Spring 2012 will open in mid-December.  Please check this site for updated details.</li>
+		</ul>
+		</p>
+
+
+		<h3>Dependent Enrollment Deadline</h3>
+		
+		<ul>
+		<li>The Aetna (Domestic) Dependent Fall Semester enrollment deadline is October 4, 2011.</li><br>
+		<ul>
+	
+		</div>
+		
+		<div id='secondary'>
+			<!-- #include virtual='/insurance/resources/includes/sidebar.inc' -->
+		</div>
+		
+		<!-- #include virtual='/resources/includes/bottom_navigation_new.inc' -->
+	</body>
+</html>

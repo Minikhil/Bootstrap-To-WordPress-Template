@@ -1,0 +1,80 @@
+class DBConnection
+	private connection_
+	
+	private sub class_initialize
+		Dim connection_: set connection_ = Server.createObject("adodb.connection")
+		connection_.provider = "Microsoft.Jet.OLEDB.4.0"
+	end sub
+	
+	public function init (conn)
+		set connection_ = conn
+	end function
+	
+	public function query (query_string, args)
+		Dim cmd: set cmd = Server.createObject("adodb.command")
+		cmd.commandText = query_string
+		set cmd.activeConnection = connection_
+		set query = cmd.execute( , args)
+	end function
+	
+	public function execute (prepared_query)
+		set execute = query(prepared_query.query_string, prepared_query.arguments)
+	end function
+	
+	public function close
+		connection_.close
+		set connection_ = nothing
+	end function
+end class
+
+class PreparedQuery
+	private query_string_
+	private arguments_
+	
+	public function init (query_string, arguments)
+		query_string_ = query_string
+		arguments_ = arguments
+	end function
+	
+	public property get query_string
+		query_string = query_string_
+	end property
+	
+	public property let query_string (val)
+		query_string_ = val
+	end property
+	
+	public property get arguments
+		arguments = arguments_
+	end property
+	
+	public property let arguments (val)
+		arguments_ = val
+	end property
+end class
+
+class DBModule
+	private connections_
+	
+	private sub class_initialize
+		set connections_ = Server.createObject("scripting.dictionary")
+	end sub
+	
+	public function connect (path)
+		path = Server.mapPath(path)
+		if (not connections_.exists(path)) then
+			dim conn: set conn = Server.createObject ("adodb.connection")
+			conn.provider = "Microsoft.Jet.OLEDB.4.0"
+			
+			conn.open path
+			
+			dim db: set db = new DBConnection
+			db.init(conn)
+			
+			connections_.add path, db
+		end if
+		
+		set connect = connections_(path)
+	end function
+end class
+dim DB: set DB = new DBModule

@@ -1,0 +1,149 @@
+h2 {
+	float: left;
+	width: 25%;
+	margin-bottom: 0;
+}
+
+.calendar_controls {
+	clear: both;
+}
+
+.calendar_controls h3
+{
+	width: 20em;
+	margin: 0 auto;
+	border: none;
+	text-align: center;
+}
+
+.calendar_controls .prev
+{
+	float: left;
+}
+
+.calendar_controls .next
+{
+	float: right;
+	clear: none;
+}
+
+.calendar
+{
+	width: 100%;
+	margin: 0 auto 2em;
+	table-layout: fixed;
+	border-collapse: collapse;
+	line-height: 1.2em;
+}
+
+.calendar th
+{
+	font-weight: bold;
+	text-align: center;
+}
+
+.calendar td
+{
+	height: 9em;
+	border: 1px solid black;
+}
+
+.calendar td .date
+{
+	display: block;
+	background: #eee;
+	font-weight: bold;
+}
+
+.calendar td.other_month .date
+{
+	font-weight: normal;
+}
+
+#key li, dl.events dt, dl.events dd
+{
+	margin: 3px;
+	border: 1px solid transparent;
+	padding: 2px;
+}
+
+dl.events
+{
+	margin: 0;
+}
+
+dl.events dt, dl.events dd
+{
+	float: none;
+	width: auto;
+}
+
+dl.events dt
+{	
+	margin-bottom: 0;
+	border-bottom: none;
+	padding-bottom: 0;
+	
+	background: transparent none no-repeat 95% 40%;
+}
+
+dl.events dd
+{
+	margin-top: 0;
+	border-top: none;
+	padding-top: 0;
+}
+
+#key {
+	margin: .7em 0 0 auto;
+}
+
+#key h4
+{
+	display: none;
+	padding: .4em 0;
+	width: 5%;
+	font-weight: bold;
+}
+
+#key ul
+{
+	float: right;
+	width: 75%;
+	margin-left: 0;
+}
+
+#key li
+{
+/*	margin: 0;*/
+	float: right;
+	width: 31.2%;
+	list-style-type: none;
+	background: transparent none no-repeat 95% 48%;
+}
+
+/* Division colors */
+
+#key li.sbi, dl.events dt.sbi {background-image: url("/resources/images/label_sbi.png");}
+#key li.sbi, dl.events dt.sbi, dl.events dd.sbi {
+	background-color: #fdd;
+	border-color: #fcc;
+}
+
+#key li.he, dl.events dt.he {background-image: url("/resources/images/label_he.png");}
+#key li.he, dl.events dt.he, dl.events dd.he {
+	background-color: #ddf;
+	border-color: #ccf;
+}
+
+#key li.wrub, dl.events dt.wrub {background-image: url("/resources/images/label_wrub.png");}
+#key li.wrub, dl.events dt.wrub, dl.events dd.wrub {
+	background-color: #bde;
+	border-color: #acd;
+}
+
+#key li.legal, dl.events dt.legal {background-image: url("/resources/images/label_legal.png");}
+#key li.legal, dl.events dt.legal, dl.events dd.legal {
+	background-color: #feb;
+	border-color: #fda;
+}

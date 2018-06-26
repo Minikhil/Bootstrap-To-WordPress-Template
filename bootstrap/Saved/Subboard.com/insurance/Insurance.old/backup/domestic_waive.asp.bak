@@ -1,0 +1,76 @@
+<!-- #include virtual='/resources/libraries/util2.lib' -->
+
+<%
+	dim category: category = "Waive &ndash; Domestic Students"
+%>
+
+<!-- #include virtual='/resources/includes/doctype.inc' -->
+
+<html lang='en-us'>
+	<head>
+		<!-- #include virtual='/insurance/resources/includes/head.inc' -->
+	</head>
+	<body>
+		<!-- #include virtual='/insurance/resources/includes/header.inc' -->
+		
+		<div id='content'>
+			<h2>Waive Insurance for Domestic Students</h2>
+
+			<p><strong><font size ="4">Important: The waiver period for Fall 2010 is over. The 2011-2012 waiver window will open after July 11, 2011.  </font></strong></p>
+
+
+
+
+			<h3>Things to Consider Before You Waive</h3>
+			<ul>
+				<li><font size ="3">Will your plan cover you in the Buffalo (Western New York) Area</font>?
+				<li>Will your plan cover you for a full academic year and summer?</li>
+				<li>Will your plan cover both at home and away at school?</li>
+				<li>Will your plan end when you turn 19, 21, 23, 26?</li>
+				<li>If so, will you be paying high COBRA premiums to continue coverage?</li>
+				<li>Will your plan cover you if you registered as a part-time student for a semester?</li>
+				<li>Are you covered for medical care while traveling?</li>
+				<li>Do you have a high deductible to meet or high co-pays?</li>
+				<li>Are you covered for illness or accidents outside your plan area such as:
+					<ul>
+						<li>Strep throat?</li>
+						<li>Sprained ankle?</li>
+						<li>Upper respiratory infection?</li>
+						<li>Urinary tract infection?</li>
+						<li>Specialist visits?</li>
+						<li>Eye infection or injury?</li>
+						<li>Chiropractic care?</li>
+						<li>Laboratory tests?</li>
+						<li>X-rays?</li>
+						<li>Ambulance services?</li>
+					</ul>
+				</li>
+				<li>Are you required to get a referral/authorization from your doctor at home in order for services at school to be paid by your insurance?</li>
+				<li>Will your plan cover prescriptions at school?</li>
+				<li>Are there doctors in the Buffalo area you can use with your plan?</li>
+				<li>Are you covered for mental/behavioral health benefits with your plan?</li>
+			</ul>
+			<br>
+	<!--		
+			<p><strong>Important: These waivers are for domestic students only. International students please <a href='international_waive.asp'>click here</a></strong></p>
+	
+			<p><a class='big-important-link' href='https://www.aetnastudenthealth.com/hardwaiver/default.aspx?groupID=100116'>Domestic Online Waiver <a></p>-->
+			
+			<!--<p><a class='big-important-link' href='https://www.aetnastudenthealth.com/hardwaiver/default.aspx?groupID=400001'>Domestic Online Waiver (Medical/Dental/Nursing)</a></p>-->
+			
+
+<!--			
+
+			<br>
+			<p><a class='big-important-link' href='http://www.aetnastudenthealth.com/stu_conn/student_connection.aspx?groupid=100116'>Domestic Online Waiver - New Spring 2011 Students *ONLY* </a></p>
+	-->		
+			
+		</div>
+		
+		<div id='secondary'>
+			<!-- #include virtual='/insurance/resources/includes/sidebar.inc' -->
+		</div>
+		
+		<!-- #include virtual='/resources/includes/bottom_navigation_new.inc' -->
+	</body>
+</html>

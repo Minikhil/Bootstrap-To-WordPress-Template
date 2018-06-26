@@ -1,0 +1,62 @@
+import "Map"
+
+dim Regex_: set Regex_ = new RegexModule
+
+function Regex
+	set Regex = Regex_
+end function
+
+class RegexModule
+	private regexes_
+	
+	private sub class_initialize
+		set regexes_ = Map.new
+	end sub
+	
+	public function [new] (str)
+		if not regexes_.exists(str) then
+			set regexes_(str) = (new RegexClass).init(str)
+		end if
+		
+		set [new] = regexes_(str)
+	end function
+end class
+
+class RegexClass
+	private vb_re_
+	
+	public function init (str)
+		set vb_re_ = new RegExp
+		vb_re_.pattern = str
+		vb_re_.multiline = true
+		
+		set init = me
+	end function
+	
+	public function find (str)
+		dim matches
+		
+		vb_re_.global = false
+		set matches = vb_re_.execute(str)
+		if matches.count = 1 then
+			set find = matches(0)
+		else
+			set find = nothing
+		end if
+	end function
+	
+	public function find_all (str)
+		vb_re_.global = true
+		set find_all = vb_re_.execute(str)
+	end function
+	
+	public function replace (str, replacement)
+		vb_re_.global = false
+		replace = vb_re_.replace(str, replacement)
+	end function
+	
+	public function replace_all (str, replacement)
+		vb_re_.global = true
+		replace_all = vb_re_.replace(str, replacement)
+	end function
+end class

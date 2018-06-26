@@ -1,0 +1,54 @@
+
+' DataManager
+'   - to_db
+'   - from_db
+'
+'
+'
+'class BooleanDataManager
+'	function to_db (value)
+'		to_db = isEmpty(value)
+'	end function
+'	
+'	function from_db (value)
+'		from_db = value
+'	end function
+'end class
+'
+'class DateDataManager
+'	function to_db (value)
+'		dim d: d = cDate(value)
+'		to_db = Util.pad_int(year(value), 4) & "-" & Util.pad_int(month(value), 2) & "-" & Util.pad_int(day(value), 2)
+'	end function
+'	
+'	function from_db (value)
+'		from_db = formatDateTime(cDate(value), vbShortDate)
+'	end function
+'end class
+'
+'class TimeDataManager
+'	function to_db (value)
+'		dim t: t = cDate(value)
+'		to_db = hour(t) & ":" & minute(t) & ":" & second(t)
+'	end function
+'	
+'	function from_db (value)
+'		from_db = formatDateTime(cDate(value), vbLongTime)
+'	end function
+'end class
+'
+'class DataManagersModule
+'	function boolean
+'		boolean = new BooleanDataManager
+'	end function
+'	
+'	function date
+'		date = new DateDataManager
+'	end function
+'	
+'	function time
+'		time = new TimeDataManager
+'	end function
+'end class
+'
+'dim DataManagers: set DataManagers = new DataManagersModule

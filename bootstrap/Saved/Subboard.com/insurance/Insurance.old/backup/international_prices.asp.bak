@@ -1,0 +1,59 @@
+<!-- #include virtual='/resources/libraries/util2.lib' -->
+
+<%
+	dim category: category = "Enrollment &ndash; International Students"
+%>
+
+<!-- #include virtual='/resources/includes/doctype.inc' -->
+
+<html lang='en-us'>
+	<head>
+		<!-- #include virtual='/insurance/resources/includes/head.inc' -->
+	</head>
+	<body>
+		<!-- #include virtual='/insurance/resources/includes/header.inc' -->
+		
+		<div id='content'>
+			<h2>International Insurance Prices</h2>
+						
+			<table>
+				<tr>
+					<td></td>
+					<th>Period of coverage</th>
+					<th>Premium for student only</th>
+					<th>Premium to add dependent spouse</th>
+					<th>Premium to add dependent children</th>
+				</tr>
+				<tr>
+					<th>Domestic students (not medical, dental, or nursing)</th>
+					<td>8/22/10 &ndash; 8/21/11</td>
+					<td>$1,686.00</td>
+					<td>$3,770.00</td>
+					<td>$2,937.00</td>
+				</tr>
+				<tr>
+					<th>Domestic students (medical, dental, or nursing)</th>
+					<td>8/22/10 &ndash; 8/21/11</td>
+					<td>$1,880.00</td>
+					<td>$4,207.00</td>
+					<td>$3,275.00</td>
+				</tr>
+				<tr>
+					<th>International students</th>
+					<td>8/15/10 &ndash; 1/14/11</td>
+					<td>$455.00</td>
+					<td>$975.00</td>
+					<td>$525.00</td>
+				</tr>
+			</table>			
+
+		
+		</div>
+		
+		<div id='secondary'>
+			<!-- #include virtual='/insurance/resources/includes/sidebar.inc' -->
+		</div>
+		
+		<!-- #include virtual='/resources/includes/bottom_navigation_new.inc' -->
+	</body>
+</html>

@@ -1,0 +1,58 @@
+class FormEphemeron
+	
+	private function 
+	
+	private function field (id, delegate)
+		set field = new FormFieldEphemeron
+		
+		set field.id = id
+		set field.delegate = delegate
+	end function
+	
+	private function labeled_field (id, delegate)
+		set labeled_field = field(id, new LabeledFieldDelegate)
+		set field.delegate.delegate = delegate
+	end function
+	
+	public function text_field (id)
+		set text_field = field(id, new LabeledFieldDelegate)
+	end function
+end class
+
+class FormFieldEphemeron
+	private name_
+	private value_
+	private status_ ' Unmodified, Modified-valid, Modified-invalid
+	private label_
+	
+	private form_
+	private delegate_
+	
+	private function class_terminate
+		print to_s
+	end function
+	
+	private function to_s
+		dim s: set s = Str.nil
+		
+		s.printf("<div class=""field"">", Array())
+		if exists(label_) then sprint_label(s)
+		delegate.sprint(s, me)
+		
+		set to_s = s
+	end function
+	
+	private function sprint_label (s)
+		s.printf "<label for=""%s"">%s</label>", Array(id, label)
+	end function
+end class
+
+class 
+
+class TextFieldDelegate
+	public function sprint (s, f)
+		s.printf("<input>", Array())
+	end function
+end class
+
+status

@@ -1,0 +1,176 @@
+<%
+	class FileSystemSingleton
+		private fso_
+		
+		private sub class_initialize
+			set fso_ = Server.createObject("Scripting.FileSystemObject")
+		end sub
+		
+		private function server_path(file_path)
+			server_path = Server.mapPath(file_path.to_string)
+		end function
+		
+		private function vb_io_mode (flags)
+			if inStr(flags, "w") then vb_io_mode = 2
+			if inStr(flags, "a") then vb_io_mode = 8
+			if inStr(flags, "r") then vb_io_mode = 1
+		end function
+		
+		public default property get file (file_path)
+			if file_path.is_directory then
+				set open = fso_.getFolder(server_path(file_path))
+			else
+				set open = fso_.getFile(server_path(file_path))
+			end if
+		end property
+		
+		public function exists (file_path)
+			if file_path.is_directory then
+				exists = fso_.folderExists(server_path(file_path))
+			else
+				exists = fso_.fileExists(server_path(file_path))
+			end if
+		end function
+		
+		public function move (source_path, dest_path)
+			if source_path.is_directory then
+				fso_.moveFile server_path(source_path), server_path(dest_path)
+			else
+				fso_.moveFolder server_path(source_path), server_path(dest_path)
+			end if
+		end function
+		
+		public function copy (source_path, dest_path)
+			if source_path.is_directory then
+				fso_.copyFile server_path(source_path), server_path(dest_path), false
+			else
+				fso_.copyFolder server_path(source_path), server_path(dest_path), false
+			end if
+		end function
+		
+		public function delete (file_path)
+			if file_path.is_directory then
+				fso_.deleteFolder server_path(file_path), false
+			else
+				fso_.deleteFile server_path(file_path), false
+			end if
+		end function
+		
+		public function create_directory (file_path)
+			if file_path.is_directory then
+				fso_.createFolder left(server_path(file_path), len(file_path) - 1)
+			else
+				fso_.createFolder server_path(file_path)
+			end if
+		end function
+		
+		public function open(file_path, flags)
+			dim p: p = server_path(file_path)
+			check_existence p, flags
+			set open = fso_.openTextFile(p, 1, true, inStr(flags, "u"))
+		end function
+		
+		public function open_write(file_path, flags)
+			dim p: p = server_path(file_path)
+			check_existence p, flags
+			if inStr(flags, "t") then
+				set open_write = fso_.createTextFile(p, true, inStr(flags, "u"))
+			else
+				set open_write = fso_.openTextFile(p, iif(inStr(flags, "a"), 8, 2), true, inStr(flags, "u"))
+			end if
+		end function
+		
+		private function check_existence (server_path, flags)
+			check_existence = fso_.fileExists(server_path)
+			
+			if check_existence and (inStr(flags, "x") <> 0) then Err.raise vbObjectError, "FileSystem", "File already exists."
+			if not (check_existence or (inStr(flags, "c") <> 0)) then Err.raise vbObjectError, "FileSystem", "File does not exist."
+		end function
+	end class
+	dim FileSystem: set FileSystem = new FileSystemSingleton
+
+	class PathClass
+		private parent_
+		private last_
+		
+		public function init (str)
+			if str = "/" then
+				parent_ = empty
+				last_ = str
+			else
+				dim separator: separator = inStrRev(str, "/", len(str) - 1)
+				parent_ = left(str, separator)
+				last_ = right(str, len(str) - separator)
+			end if
+			
+			set init = me
+		end function
+		
+		public default property get to_string
+			to_string = parent_ & last_
+		end property
+		
+		public property get last
+			last = last_
+		end property
+		
+		public property get base
+			dim x: x = inStrRev(last_, ".")
+			base = iif(x > 0, left(last_, x - 1), last_)
+			if x = 0 then
+				base = last_
+			else
+				base = left(last_, x - 1)
+			end if
+		end property
+		
+		public property get extension
+			dim x: x = inStrRev(last_, ".")
+			extension = right(last_, len(last_) - x)
+		end property
+		
+		public property get is_directory
+			is_directory = (right(last_, 1) = "/")
+		end property
+		
+		public property get has_parent
+			has_parent = not isEmpty(parent_)
+		end property
+		
+		public property get parent
+			set parent = Path(parent_)
+		end property
+		
+		public function child (part)
+			set child = Path(to_string & part)
+		end function
+	end class
+	
+	class PathModule
+		private HERE_
+		
+		private sub class_initialize
+			set HERE_ = (new PathClass).init(Request.serverVariables("URL"))
+		end sub
+		
+		public property get HERE
+			set HERE = HERE_
+		end property
+		
+		public default property get construct (str)
+			set construct = (new PathClass).init(str)
+		end property
+	
+		public function resource_path (name, subfolder)
+			dim prefix: set prefix = Path.HERE
+			dim suffix: suffix = "resources/" & subfolder & "/" & name
+			
+			do while prefix.has_parent
+				set prefix = prefix.parent
+				set resource_path = prefix.child(suffix)
+				if FileSystem.exists(resource_path) then exit function
+			loop
+		end function
+	end class
+	dim Path: set Path = new PathModule
+%>

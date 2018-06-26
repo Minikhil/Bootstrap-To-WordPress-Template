@@ -1,0 +1,71 @@
+class FloatClass
+	private value_
+	
+	public function init (val)
+		value_ = cDbl(val)
+		set init = me
+	end function
+	
+	public default property get value
+		value = value_
+	end property
+	
+	public property let value (val)
+		value_ = val
+	end property
+	
+	public function floor
+'		Rounds toward negative infinity. Returns an Int object.
+		
+		set floor = Int(value_)
+	end function
+	
+	public function ceil
+'		Rounds toward positive infinity. Returns an Int object.
+		
+		if value_ > fix(value_) then
+			set ceil = Int(value_ + 1)
+		else
+			set ceil = Int(fix(value_))
+		end if
+	end function
+	
+	public function abs_floor
+'		Rounds toward zero. Returns an Int object.
+		
+		set abs_floor = Int(fix(value_))
+	end function
+	
+	public function abs_ceil
+'		Rounds away from zero. Returns an Int object.
+		
+		set abs_ceil = Int(fix(value_ + sgn(value_ - fix(value_))))
+	end function
+	
+	public function humanize
+'		Returns a human-formatted string for the number.
+'		-	Optional minus sign
+'		-	Default precision
+'		-	Leading zero for 1 > n > -1
+'		-	Digit separators
+		
+ 		humanize = formatNumber(value_, -1, TristateTrue, TristateFalse, TristateTrue)
+		'                               ^Decimal places   ^Parenthesize negative numbers
+		'                                   ^Leading zero for decimals   ^Group digits
+	end function
+	
+	public function marshall
+		marshall = value_
+	end function
+end class
+
+class FloatModule
+	public default property get construct (val)
+		set construct = (new FloatClass).init(val)
+	end property
+	
+	public function unmarshall (data)
+		set unmarshall = construct(data)
+	end function
+end class
+dim Float: set Float = new FloatModule

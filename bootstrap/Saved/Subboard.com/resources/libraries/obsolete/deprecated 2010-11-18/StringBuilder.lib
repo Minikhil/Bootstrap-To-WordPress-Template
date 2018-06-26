@@ -1,0 +1,69 @@
+class StringBuilderClass
+	private data_
+	private size_
+	private array_size_
+	
+	private sub CLASS_INITIALIZE
+		data_ = Array()
+		size_ = 0
+		array_size_ = StringBuilder.MIN_ARRAY_SIZE
+		redim data_(StringBuilder.MIN_ARRAY_SIZE - 1)
+	end sub
+	
+	public default property get string
+		if not isEmpty(delimiter_) then resize_ size_
+		
+		string = join(data_, delimiter_)
+	end property
+	
+	public function delimited (delimiter)
+		resize_ size_
+		delimited = join(data_, delimiter)
+	end function
+	
+	public function print_each
+		dim i: for i = 0 to size_ -1
+			print data_(i)
+		next
+	end function
+	
+	public function add (datum)
+		size_ = size_ + 1
+		
+		if (size_ > array_size_) then resize_ IntUtil.round_up(array_size_ * StringBuilder.GRANTED_HEAD_ROOM)
+		
+		data_(size_ - 1) = datum
+	end function
+	
+	public function add_all (data)
+		dim old_size: old_size = size_
+		size_ = size_ + uBound(data) + 1
+		
+		if (size_ > array_size_) then resize_ IntUtil.round_up(size_ * StringBuilder.GRANTED_HEAD_ROOM)
+		
+		dim i: do while old_size + i < size_
+			data_(old_size + i) = data(i)
+			i = i + 1
+		loop
+	end function
+	
+	private function resize_ (array_size)
+		array_size_ = array_size
+		redim preserve data_(array_size - 1)
+	end function
+end class
+
+class StringBuilderModule
+	public property get MIN_ARRAY_SIZE
+		MIN_ARRAY_SIZE = 4
+	end property
+	
+	public property get GRANTED_HEAD_ROOM
+		GRANTED_HEAD_ROOM = 2
+	end property
+	
+	public default property get construct
+		set construct = new StringBuilderClass
+	end property
+end class
+dim StringBuilder: set StringBuilder = new StringBuilderModule

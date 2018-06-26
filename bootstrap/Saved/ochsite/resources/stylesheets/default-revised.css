@@ -1,0 +1,419 @@
+/************************************************** General */
+
+body
+{
+	width: 57em;
+	margin: 1em auto;
+	font: 10px Verdana; /* 10px/16px on most clients but scales properly in IE6.*/
+	line-height: 16px; /* Safari doesn't recognize the line-height shorthand in the font property */
+    color: #325d8e;	
+}
+
+h1 a, #home a
+{
+	display: block;
+	overflow: hidden;
+	text-indent: -1000px;
+	background-repeat: no-repeat;
+}
+
+:focus
+{
+	outline: 1px dotted #77a;
+}
+
+a.command
+{
+	display: block;
+}
+
+/* This is only applied by javascript. */
+.hidden
+{
+	display: none !important;
+}
+
+/************************************************** Header */
+
+h1
+{
+	float: right;
+}
+
+h1 a
+{
+	width: 97px;
+	height: 32px;
+	background-image: url(/resources/images/sbi_logo.gif);
+}
+
+h2
+{
+	clear: both;
+	float: left;
+	margin-left: 2em;
+}
+
+h2 a
+{
+	font-size: 2em;
+	line-height: 1.1em; /* So it will appear to line up with the form at the bottom. */
+	text-decoration: none;
+	color: #00387f;
+}
+
+h2 a .domain
+{
+	font-size: .75em;
+}
+
+#navigation_menu
+{
+	float: right;
+	margin-bottom: 1em;
+}
+
+#navigation_menu div
+{
+	float: left;
+}
+
+/************************************************** Navigation */
+
+/* This is an unsemantic kludge. Will be replaced if I can figure out how. */
+.table_layout_wrapper
+{
+	display: table;
+	clear: both;
+	width: 100%;
+}
+
+#categories, #subcategories
+{
+	clear: both;
+	display: table-row;
+	width: 100%;
+	margin: 0;
+}
+
+#categories li, #subcategories li
+{
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+
+#categories
+{
+	height: 2.4em;
+	background: #69f;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+#subcategories
+{
+	background: #47d;
+}
+
+#categories a, #subcategories a
+{
+	text-decoration: none;
+	color: #00387f;
+}
+
+#categories a:hover, #subcategories a:hover, #categories a.current, #subcategories a.current
+{
+	color: white;
+}
+
+/************************************************** Content */
+
+#content
+{
+	clear: left;
+	margin: 1em 1.818182em 1em 3.636364em; /* Bottom margin will probably collapse. */
+	font-size: 1.1em;
+}
+
+/*************** Headings  */
+
+h3
+{
+	font-weight: bold;
+	font-size: 1.2em;
+	margin: .833333em 0 .833333em -1.666666em;
+	padding-left: 1.666666em;
+	background: url(/resources/images/bullet_blue.png) no-repeat .416666em 65%;
+}
+
+h4
+{
+	font-weight: bold;
+}
+
+h5
+{
+	font-style: italic;
+}
+
+/*************** Bottom Margins  */
+
+p, ul, ol, dl, blockquote, .contact
+{
+	margin-bottom: 1em;
+}
+
+/*************** Indentation  */
+
+ul, ol, blockquote
+{
+	margin-left: 2em;
+}
+
+/*************** Lists  */
+
+ul
+{
+	list-style-type: disc;
+}
+
+ul ul
+{
+	list-style-type: circle;
+}
+
+ol
+{
+	list-style-type: decimal;
+}
+
+/*************** Miscellaneous Inline formatting  */
+
+em
+{
+	font-style: italic;
+}
+
+strong
+{
+	font-weight: bold;
+}
+
+cite
+{
+	font-style: italic;
+}
+
+/*************** Tables  */
+
+td, th
+{
+	padding-right: 1em;
+}
+
+th
+{
+	font-weight: bold;
+}
+
+tr.subheads th
+{
+	font-weight: normal;
+	font-style: italic;
+}
+
+/*************** Contact blocks  */
+
+.contact:target
+{
+	padding: .5em 0 .5em 2em;
+	background: #fdeef4;
+}
+
+.contact .name
+{
+	font-weight: bold;
+}
+
+.contact .city, .contact .state, .contact .zip
+{
+	display: inline;
+}
+
+.contact .city:after
+{
+	content: ', ';
+}
+
+dl.contact
+{
+	padding-bottom: 1px; /* Fixes a puzzling Opera bug in which the bottom margin does not appear. */
+}
+
+dl.contact:after
+{
+	content: '';
+	clear: left;
+	display: block;
+}
+
+dl.contact dt
+{
+	width: 27.7em; /* I used the golden ratio for the columns. It's not really that important. */
+	clear: left;
+	float: left;
+}
+
+dl.contact dt:after
+{
+	content: ':';
+}
+
+dl.contact dd
+{
+	float: left;
+}
+
+/*************** Forms  */
+
+form
+{
+	margin-bottom: 1em;
+}
+
+form div, fieldset.compact
+{
+	float: left;
+	padding-bottom: .5em;
+}
+
+label
+{
+	float: left;
+	display: block;
+	width: 10em;
+}
+
+label.fieldset
+{
+	float: none;
+	font-weight: bold;
+}
+
+fieldset.checkboxes input
+{
+	float: left;
+}
+
+fieldset.checkboxes label
+{
+	width: 9em;
+	text-align: right;
+}
+
+fieldset.compact *
+{
+	float: none;
+	display: inline;
+	margin: 0 1em 0 0;
+}
+
+fieldset.compact input
+{
+	width: 3em;
+}
+
+input[type=submit]
+{
+	margin-top: 1em;
+}
+
+input[type=text]
+{
+	width: 15em;
+}
+
+input.required
+{
+	outline: 1px solid red;
+}
+
+select
+{
+	width: 15.3em; /* This lines up better. Why? No idea. */
+}
+
+option
+{
+	display: block !important; /* I didn't even know that inline options were _possible_ until they exploded. */
+}
+
+/*************** Google Maps  */
+
+div.map
+{
+	width: 100%;
+	height: 40em;
+}
+
+/************************************************** Footer */
+
+#footer
+{
+	clear: both;
+	margin-top: 1em;
+	border: 1px solid #cfd6e9;
+	border-width: 1px 0;
+	padding-left: 20%; /* Like 20%, but safe for IE 6 */
+	background: url(/resources/images/sbi_bottom_logo.gif) no-repeat 2em 50%;
+	font-size: 1.1em;
+}
+
+.divisions
+{
+	clear: left;
+	margin: 0;
+	padding: .4em 0 .5em;
+	overflow: auto;
+	list-style-type: none; /* I think that this is a Safari bug. */
+}
+
+/* A border-bottom on .n1 would have made more sense, but IE doesn't think so. Why? Such is the ineffable wisdom of Redmond. */
+.divisions.n1
+{
+	border-bottom: 1px solid #cfd6e9;
+}
+
+.divisions li
+{
+	float: left;
+	margin-left: .8em;
+	border-left: 1px solid #cfd6e9;
+	padding-left: .8em;
+	line-height: 1em;
+}
+
+.divisions li.n1
+{
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+
+.divisions a
+{
+	text-decoration: none;
+}
+
+#byline
+{
+	clear: both;
+	padding-left: 20%;
+	font-size: 1.0em;
+}
+
+#byline a
+{
+	text-decoration: none;
+}

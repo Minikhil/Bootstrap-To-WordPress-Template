@@ -1,0 +1,192 @@
+import "List"
+
+class MapModule
+	
+	public function [new]
+'		Creates a new empty Map.
+		
+		set [new] = new MapClass
+	end function
+	
+	public function literal (arr)
+'		Constructs a map whose keys and values are taken from the given array-
+'		like collection. The 0th element is mapped to the 1st, the 2nd to the
+'		3rd, and so on.
+		
+		assert((size(arr) mod 2) = 0), "Uneven array in Map literal"
+		set literal = [new]
+		
+		dim k
+		with Iterator(arr)
+			do while .has_current
+				assign k, .value
+				.move_next
+				literal.add k, .value
+				.move_next
+			loop
+		end with
+	end function
+	
+end class
+dim Map: set Map = new MapModule
+
+class MapClass
+	private dictionary_
+		' An ADODB Dictionary containing the Map data.
+	
+	private sub class_initialize
+		set dictionary_ = Server.CreateObject("Scripting.Dictionary")
+	end sub
+	
+	public function init_dictionary (dictionary)
+'		Initializes the Map with the given ADODB Dictionary.
+		
+		set dictionary_ = dictionary
+		
+		set init_dictionary = me
+	end function
+	
+	public default property get item (key)
+'		Returns the value associated with the given key.
+		
+		if dictionary_.exists(key) then
+			assign item, dictionary_.item(key)
+		else
+			assert false, "Key """ & key & """ does not exist in Map"
+		end if
+	end property
+	
+	public property let item (key, value)
+'		Stores the given primitive in the Map at the given key. If there is
+'		already a value at that key, the old value is replaced.
+		
+		dictionary_.item(key) = value
+	end property
+	
+	public property set item (key, value)
+'		Stores the given object in the Map at the given key. If there is
+'		already a value at that key, the old value is replaced.
+		
+		set dictionary_.item(key) = value
+	end property
+	
+	public property get size
+'		Returns the number of elements in the Map.
+		
+		size = dictionary_.count
+	end property
+	
+	public function keys
+'		Returns an Array of all keys of the map.
+
+		keys = dictionary_.keys
+	end function
+	
+	public function items
+'		Returns an Array of all elements of the Map.
+		
+		items = dictionary_.items
+	end function
+	
+	public function pairs
+		import "List"
+		
+		dim l: set l = List.new
+		with iterator
+			do while .has_current
+				l.add .key
+				l.add .value
+				
+				.move_next
+			loop
+		end with
+		pairs = l.to_array
+	end function
+	
+	public function exists (key)
+'		Returns true if the given key is associated with an element in the Map,
+'		and false otherwise.
+		
+		exists = dictionary_.exists(key)
+	end function
+	
+	public function add (key, value)
+'		Adds the given key, value pair to the map. If the key is already
+'		associated with an element in the map, raise an exception.
+		
+		dictionary_.add key, value
+	end function
+	
+	public function add_all (collection)
+'		Adds all key-value pairs from the given collection.
+		
+		with global("Iterator")(collection)
+			do while .has_current
+				add .key, .value
+				
+				.move_next
+			loop
+		end with
+	end function
+	
+	public function remove (key)
+'		Removes the key and its associated value from the Map. Raises an
+'		exception if the key is not in the Map.
+		
+		dictionary_.remove key
+	end function
+	
+	public function iterator
+'		Returns a MapIterator for the Map.
+		
+		set iterator = global("Iterator").for_map(me)
+	end function
+	
+	public function immutable
+'		Returns an ImmutableMap with a copy of the data of this Map.
+		
+		set immutable = (new ImmutableMap).init_dictionary(dictionary_)
+	end function
+end class
+
+class ImmutableMap
+	private dictionary_
+	
+	private sub class_initialize
+		set dictionary_ = Server.CreateObject("Scripting.Dictionary")
+	end sub
+	
+	public function init_dictionary (dictionary)
+		set dictionary_ = dictionary
+		
+		set init_dictionary = me
+	end function
+	
+	public default property get item (key)
+		if dictionary_.exists(key) then
+			assign item, dictionary_.item(key)
+		else
+			assert false, "Key """ & key & """ does not exist in Map"
+		end if
+	end property
+	
+	public property get size
+		size = dictionary_.count
+	end property
+	
+	public function keys
+		keys = dictionary_.keys
+	end function
+	
+	public function items
+		items = dictionary_.items
+	end function
+	
+	public function exists (key)
+		exists = dictionary_.exists(key)
+	end function
+	
+	public function iterator
+		set iterator = global("Iterator").for_map(me)
+	end function
+end class
