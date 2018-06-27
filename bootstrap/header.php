@@ -32,10 +32,10 @@
 
   </head>
 
-  <body id="page-top" <?php body_class(); ?>>
+
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+    <!-- <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
       <div class="container">
       </br>
         <a class="navbar-brand js-scroll-trigger" href="http://localhost:8888/wordpress/">SUB BOARD I, INC</a>
@@ -45,18 +45,12 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
 
-            <?php
-              $defaults = array(
-                'container'=> 'ul',
-                'theme_location'=> 'primary-menu',
-                'menu_class'=> 'navbar-nav ml-auto'
-              );
-              ?>
+
             <ul class="navbar-nav ml-auto">
               <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">SERVICES</a></li>
               <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="http://localhost:8888/wordpress/sample-page/">ABOUT US</a></li>
-            <!-- <li class="nav-item mx-0 mx-lg-1"><a class="nav-link"><?php wp_nav_menu( $defaults); ?></a></li> -->
+
           </ul>
         </div>
       </div>
-    </nav>
+    </nav> -->

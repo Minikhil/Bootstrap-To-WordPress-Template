@@ -13,9 +13,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-.btn-social{
 
-}
 
 
 
@@ -26,7 +24,7 @@
 
 }
 </style>
-<footer class="footer text-center">
+<footer class="footer text-center" id = "footer">
   <div class="container">
     <div class="row">
       <div class="col-md-4 mb-5 mb-lg-0">

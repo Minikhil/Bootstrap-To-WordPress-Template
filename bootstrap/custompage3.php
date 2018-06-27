@@ -1,23 +1,25 @@
-<?php /*Template Name: custompage2*/ get_header(); ?>
+<?php /*Template Name: custompage3*/ get_header(); ?>
+
+
 <style media="screen">
+  /* Creates space between navbar and content */
   #page-top{
-    padding-top: 4%;
-    position: relative;
-    height: 100%;
-
-
+    padding-top: 7%
+  }
+  header{
+    height: 80%;
   }
   footer{
-    position: relative;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    padding-top: 50px;
-
-
+    position: fixed;
+     left: 0;
+     bottom: 0;
+     width: 100%;
+    
   }
+
 </style>
  <section  id="page-top" <?php body_class(); ?> >
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
       <div class="container">
@@ -52,7 +54,10 @@
     <?php endif; ?>
       </div>
     </div>
+
 </section>
+
+
 
 <!-- Inserts footer.php -->
 <?php get_footer(); ?>
