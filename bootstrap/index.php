@@ -76,190 +76,137 @@
 </header>
 
 <!-- Portfolio Grid Section -->
-<section  id="portfolio">
-   <div class="container" >
-     <div class="row">
-        <div class="col-lg-12 text-center">
-           <p style="font-size: 50px; font-weight: bold;">SERVICES</p>
-        </div>
-     </div>
-      <div class="row mt-5">
-         <div class="col-lg-2 spacer  portfolio-item">
-
-             <a href="http://healthinsurance.buffalo.edu" class="portfolio-link" data-toggle="modal">
-               <div class="caption bgcolor1">
-                  <div class="caption-content">
-                     <i class="fa fa-search-plus fa-3x"></i>
-                  </div>
-               </div>
-                <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/insurancelogo.jpg"  class="img-responsive" alt="">
-                <div class="caption bgcolor1">
-                   <div class="caption-content">
-                      <i class="fa fa-search-plus fa-3x"></i>
-                   </div>
-                </div>
-             </a>
 
 
-         </div>
-         <div class="col-lg-2 spacer   portfolio-item">
-            <a href="./pharmacy.html" class="portfolio-link" data-toggle="modal">
-              <div class="caption bgcolor1">
-                 <div class="caption-content">
-                    <i class="fa fa-search-plus fa-3x"></i>
-                 </div>
-              </div>
-               <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/pharmacylogo.jpg" class="img-responsive" alt="">
-            </a>
-
-         </div>
-         <div class="col-lg-2 spacer    portfolio-item">
-
-            <a href="http://localhost:8888/wordpress/sbi-health/" class="portfolio-link" data-toggle="modal">
-              <div class="caption bgcolor1">
-                 <div class="caption-content">
-                    <i class="fa fa-search-plus fa-3x"></i>
-                 </div>
-              </div>
-               <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/health&safety.jpg" class="img-responsive" alt="">
-            </a>
-         </div>
-         <div class="col-lg-2 spacer portfolio-item">
-
-            <a href="./legal.html" class="portfolio-link" data-toggle="modal">
-              <div class="caption bgcolor1">
-                 <div class="caption-content">
-                    <i class="fa fa-search-plus fa-3x"></i>
-                 </div>
-              </div>
-               <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/legallogo.jpg" class="img-responsive" alt="">
-            </a>
-         </div>
+<!-- Portfolio Grid Section -->
+<section class="portfolio" id="portfolio">
+  <div class="container">
+    <h2 class="text-center text-uppercase text-secondary mb-0">SERVICES</h2>
+    <hr class="star-dark mb-5">
+    <div class="row">
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-1">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+        <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/insurancelogo.jpg"  class="img-responsive" alt="">
+        </a>
       </div>
-      <!-- END ROW 1 -->
-      <div class="row mt-5 ">
-        <div class="col-lg-2 spacer  portfolio-item">
-
-           <a href="http://sbiticket.buffalo.edu/" class="portfolio-link" data-toggle="modal">
-             <div class="caption bgcolor1">
-                <div class="caption-content">
-                   <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-             </div>
-
-              <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/ticketlogo.jpg" class="img-responsive" alt="">
-
-              <div class="caption bgcolor1">
-                 <div class="caption-content">
-                    <i class="fa fa-search-plus fa-3x"></i>
-                 </div>
-              </div>
-           </a>
-        </div>
-        <div class="col-lg-2 spacer  portfolio-item">
-
-           <a href="/och/" class="portfolio-link" data-toggle="modal">
-             <div class="caption bgcolor1">
-                <div class="caption-content">
-                   <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-             </div>
-              <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/housinglogo.jpg" class="img-responsive" alt="">
-           </a>
-        </div>
-        <div class="col-lg-2 spacer portfolio-item">
-
-           <a href="./drycleaning.html" class="portfolio-link" data-toggle="modal">
-             <div class="caption bgcolor1">
-                <div class="caption-content">
-                   <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-             </div>
-              <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/SBIDryCleaninglogo.png" class="img-responsive" alt="">
-           </a>
-        </div>
-        <div class="col-lg-2 spacer portfolio-item">
-
-           <a href="./gaming.html" class="portfolio-link" data-toggle="modal">
-             <div class="caption bgcolor1">
-                <div class="caption-content">
-                   <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-             </div>
-              <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/SBIGamingLogo.png" class="img-responsive" alt="">
-           </a>
-        </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-2">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+        <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/pharmacylogo.jpg" class="img-responsive" alt="">
+        </a>
       </div>
-      <!-- END OF ROW 2 -->
-      <div class="row mt-5">
-        <div class="col-lg-2 spacer portfolio-item">
-
-           <a href="http://localhost:8888/wordpress/jobs/" class="portfolio-link" data-toggle="modal">
-             <div class="caption bgcolor1">
-                <div class="caption-content">
-                   <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-             </div>
-
-              <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/wrublogo.jpg" class="img-responsive" alt="">
-           </a>
-        </div>
-        <div class="col-lg-2 spacer portfolio-item">
-
-           <a href="http://localhost:8888/wordpress/jobs/" class="portfolio-link" data-toggle="modal">
-             <div class="caption bgcolor1">
-                <div class="caption-content">
-                   <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-             </div>
-
-              <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/Jobs.png" class="img-responsive" alt="">
-              <div class="caption bgcolor1">
-                 <div class="caption-content">
-                    <i class="fa fa-search-plus fa-3x"></i>
-                 </div>
-              </div>
-           </a>
-        </div>
-        <!-- Staff Directory -->
-        <div class="col-lg-2 spacer portfolio-item">
-
-           <a href="http://localhost:8888/wordpress/staff/" class="portfolio-link" data-toggle="modal">
-             <div class="caption bgcolor1">
-                <div class="caption-content">
-                   <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-             </div>
-
-
-              <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/StaffDirectory.png" class="img-responsive" alt="">
-           </a>
-        </div>
-        <div class="col-lg-2 spacer portfolio-item">
-
-           <a href="./accounting/accounting.html" class="portfolio-link" data-toggle="modal">
-             <div class="caption bgcolor1">
-                <div class="caption-content">
-                   <i class="fa fa-search-plus fa-3x"></i>
-                </div>
-             </div>
-
-              <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/accountinglogo.jpg" class="img-responsive" alt="">
-           </a>
-        </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="http://healthinsurance.buffalo.edu">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+        <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/health&safety.jpg" class="img-responsive" alt="">
+        </a>
       </div>
-      <!-- END OF ROW 3 -->
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-4">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+         <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/legallogo.jpg" class="img-responsive" alt="">
+        </a>
+      </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="https://www.sbiticket.buffalo.edu/">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+          <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/ticketlogo.jpg" class="img-responsive" alt="">
 
-
-
-
-
-
-
-
-
-
-   </div>
+        </a>
+      </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="https://subboard.com:8081/och/">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+        <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/housinglogo.jpg" class="img-responsive" alt="">
+        </a>
+      </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-6">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+          <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/SBIDryCleaninglogo.png" class="img-responsive" alt="">
+        </a>
+      </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-6">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+          <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/SBIGamingLogo.png" class="img-responsive" alt="">
+        </a>
+      </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="http://wrub.org/">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+          <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/wrublogo.jpg" class="img-responsive" alt="">
+        </a>
+      </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/jobs/6">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+          <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/Jobs.png" class="img-responsive" alt="">
+        </a>
+      </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/staff/">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+          <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/StaffDirectory.png" class="img-responsive" alt="">
+        </a>
+      </div>
+      <div class="col-sm-3 ">
+        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-6">
+          <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+              <i class="fa fa-search-plus fa-3x"></i>
+            </div>
+          </div>
+          <img src="<?php echo get_template_directory_uri(); ?>/img/Logos/accountinglogo.jpg" class="img-responsive" alt="">
+        </a>
+      </div>
+    </div>
+  </div>
 </section>
 
 </body>
