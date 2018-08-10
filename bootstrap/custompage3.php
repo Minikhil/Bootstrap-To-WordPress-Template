@@ -14,10 +14,12 @@
      left: 0;
      bottom: 0;
      width: 100%;
-    
+
   }
 
 </style>
+
+
  <section  id="page-top" <?php body_class(); ?> >
 
     <!-- Navigation -->

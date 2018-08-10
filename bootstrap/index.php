@@ -85,7 +85,7 @@
     <hr class="star-dark mb-5">
     <div class="row">
       <div class="col-sm-3 ">
-        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-1">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/sbi-insurance/">
           <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
             <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
               <i class="fa fa-search-plus fa-3x"></i>
@@ -95,7 +95,7 @@
         </a>
       </div>
       <div class="col-sm-3 ">
-        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-2">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/pharmacy/">
           <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
             <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
               <i class="fa fa-search-plus fa-3x"></i>
@@ -105,7 +105,7 @@
         </a>
       </div>
       <div class="col-sm-3 ">
-        <a class="portfolio-item d-block mx-auto" href="http://healthinsurance.buffalo.edu">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/sbi-health/">
           <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
             <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
               <i class="fa fa-search-plus fa-3x"></i>
@@ -115,7 +115,7 @@
         </a>
       </div>
       <div class="col-sm-3 ">
-        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-4">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/sbi-legal/">
           <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
             <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
               <i class="fa fa-search-plus fa-3x"></i>
@@ -146,7 +146,7 @@
         </a>
       </div>
       <div class="col-sm-3 ">
-        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-6">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/dry-cleaning/">
           <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
             <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
               <i class="fa fa-search-plus fa-3x"></i>
@@ -156,7 +156,7 @@
         </a>
       </div>
       <div class="col-sm-3 ">
-        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-6">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/sbi-gaming/">
           <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
             <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
               <i class="fa fa-search-plus fa-3x"></i>
@@ -196,7 +196,7 @@
         </a>
       </div>
       <div class="col-sm-3 ">
-        <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-6">
+        <a class="portfolio-item d-block mx-auto" href="http://localhost:8888/wordpress/sbi-accounting/">
           <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
             <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
               <i class="fa fa-search-plus fa-3x"></i>
