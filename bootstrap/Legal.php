@@ -39,7 +39,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
       <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="http://localhost:8888/wordpress/" style="font-size: 30px;">SUB BOARD I, INC</a>
+        <a class="navbar-brand js-scroll-trigger" href="http://localhost:8888/wordpress/" style="font-size: 30px;">SUB BOARD I. INC <br/><span style="font-size: 15px; position: relative; bottom:50%;"> LEGAL <span> </a>
         <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           Menu
           <i class="fa fa-bars"></i>
@@ -76,7 +76,7 @@
     </div>
     <div class="row">
       <div class="col-sm-4 ">
-        <a href="http://localhost:8888/wordpress/safety-shuttle-schedule/" class="portfolio-link" data-toggle="modal">
+        <a href="http://localhost:8888/wordpress/sbi-legal/attorney-consultations/" class="portfolio-link" data-toggle="modal">
           <div class="caption">
             <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
               <i class="fa fa-search-plus fa-3x"></i>
@@ -133,4 +133,38 @@
 </br>
 </br>
 <!-- Inserts footer.php -->
-<?php get_footer(); ?>
+
+<footer class="footer text-center" id = "footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 mb-5 mb-lg-0">
+        <h1 class="text-uppercase mb-4">Location</h1>
+        <p style="font-size: 20px" class="lead mb-0">State Univerity at Buffalo
+          <br>315 Student Union<br>Amherst, NY 14260
+      </div>
+      <div class="col-md-4 mb-5 mb-lg-0">
+        <h1 class="text-uppercase mb-4">Around the Web</h1>
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item">
+            <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#" >
+              <i class="fa fa-fw fa-facebook" ></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a class="btn btn-outline-light btn-social text-center rounded-circle" href="#">
+              <i class="fa fa-fw fa-twitter" ></i>
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+      <div class="col-md-4">
+
+        <p style="font-size: 15px">Template Powered by: Freelancer<br>
+       Freelance is a free to use, open source Bootstrap theme created by <a href="http://startbootstrap.com" target="_blank">Start Bootstrap</a>.</p>
+
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,4 +1,4 @@
-<?php /*Template Name: custompage3*/ get_header(); ?>
+<?php /*Template Name: Jobs*/ get_header(); ?>
 
 
 <style media="screen">

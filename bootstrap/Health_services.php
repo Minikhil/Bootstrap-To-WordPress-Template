@@ -1,4 +1,4 @@
-<?php /*Template Name: Health*/ get_header(); ?>
+<?php /*Template Name: Health_services*/ get_header(); ?>
 
 
 <style media="screen">
@@ -36,16 +36,7 @@
 
 </style>
 
-<!-- Header -->
-<header style="text-align: center;color: #fff; background: #8BBC3C;" class="masthead text-white text-center" >
-  <div class="container">
-    <img class="img-fluid mb-5 d-block mx-auto" src="<?php echo get_template_directory_uri(); ?>/drycleaning/img/Logos/SBIHealthedlogo2.png" alt="">
 
-    </br>
-  </div>
-
-
-</header>
  <section  id="page-top" <?php body_class(); ?> >
 
     <!-- Navigation -->
@@ -74,69 +65,7 @@
 </section>
 
 
-<!-- Portfolio -->
-<section id="portfolio">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h1>SERVICES</h1>
-        <hr class="star-primary">
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-4 ">
-        <a href="http://localhost:8888/wordpress/safety-shuttle-schedule/" class="portfolio-link" data-toggle="modal">
-          <div class="caption">
-            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-              <i class="fa fa-search-plus fa-3x"></i>
-            </div>
-          </div>
-         <img src="<?php echo get_template_directory_uri(); ?>/img/HealthEd/SafetyShuttleSchedule.png"  class="img-responsive" alt="">
-        </a>
-      </div>
-      <div class="col-sm-4 ">
-        <a href="http://localhost:8888/wordpress/sbi-health/crisis-services/" class="portfolio-link" data-toggle="modal">
-          <div class="caption">
-            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-              <i class="fa fa-search-plus fa-3x"></i>
-            </div>
-          </div>
-         <img src="<?php echo get_template_directory_uri(); ?>/img/HealthEd/CrisisServices.png" class="img-responsive" alt="">
-        </a>
-      </div>
-      <div class="col-sm-4 ">
-        <a href="http://localhost:8888/wordpress/no-woman-left-behind/" class="portfolio-link" data-toggle="modal">
-          <div class="caption">
-            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-              <i class="fa fa-search-plus fa-3x"></i>
-            </div>
-          </div>
-             <img src="<?php echo get_template_directory_uri(); ?>/img/HealthEd/NoWomanLeftBehind.png" class="img-responsive" alt="">
-        </a>
-      </div>
-      <div class="col-sm-4 ">
-        <a href="http://localhost:8888/wordpress/safety-shuttle-policies/" class="portfolio-link" data-toggle="modal">
-          <div class="caption">
-            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-              <i class="fa fa-search-plus fa-3x"></i>
-            </div>
-          </div>
-          <img src="<?php echo get_template_directory_uri(); ?>/img/HealthEd/SafetyShuttlePolicies.png"  class="img-responsive" alt="">
-        </a>
-      </div>
-      <div class="col-sm-4 ">
-        <a href="http://localhost:8888/wordpress/awareness-events/" class="portfolio-link" data-toggle="modal">
-          <div class="caption">
-            <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
-              <i class="fa fa-search-plus fa-3x"></i>
-            </div>
-          </div>
-          <img src="<?php echo get_template_directory_uri(); ?>/img/HealthEd/AwarenessEvents.png" class="img-responsive" alt="">
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+
 
 
 
@@ -165,7 +94,7 @@
 </br>
 </br>
 </br>
-<!-- Inserts footer.php -->
+<!-- Inserts footer-->
 
 <footer class="footer text-center" id = "footer">
   <div class="container">
