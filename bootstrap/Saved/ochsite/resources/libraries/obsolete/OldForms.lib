@@ -1,0 +1,179 @@
+Import.library "List"
+Import.library "Fields"
+Import.library "FieldFormatters"
+
+class FormClass
+	private name_
+	private fields_
+	private valid_
+	private errors_
+	
+	private sub class_initialize
+		valid_ = true
+		set fields_ = new FormFieldsCollection: fields_.init(me)
+		set errors_ = new FormErrorsCollection: errors_.init(me)
+	end sub
+	
+	public function init (name)
+		name_ = name
+	end function
+	
+	public default property get fieldq (name)
+		set fieldq = fields_(name)
+	end property
+	
+	public property get fields
+		set fields = fields_
+	end property
+	
+	public property get errors
+		set errors = errors_
+	end property
+	
+	public property get valid
+		valid = valid_
+	end property
+	
+	public function error (message)
+		valid_ = false
+		errors_.add(message)
+	end function
+	
+	'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''' Query Generators
+	
+	public function insert_query
+		dim arguments: set arguments = List.construct
+		dim columns: set columns = StringBuilder.construct_delimited(", ")
+		dim placeholders: set placeholders = StringBuilder.construct_delimited(", ")
+		
+		dim form_itr: set form_itr = fields_.iterator
+		do while form_itr.has_current
+			with form_itr.value
+				if not isEmpty(.db_field) then
+					placeholders.add "?"
+					columns.add "[" & .name & "]"
+					arguments.add .value
+				end if
+			end with
+			form_itr.move_next
+		loop
+		
+		set insert_query = new PreparedQuery
+		insert_query.init sprints("insert into \$ (\$) values (\$);", Array(name_, columns, placeholders)), arguments.to_array
+	end function
+end class
+
+class FormFieldsCollection
+	private fields_
+	private form_
+	
+	private sub class_initialize
+		set fields_ = Server.createObject("scripting.dictionary")
+	end sub
+	
+	public function init (form)
+		set form_ = form
+	end function
+	
+	public default property get item (name)
+		set item = fields_(name)
+	end property
+	
+	public function iterator
+		set iterator = global_object("Iterator").from_array(fields_.items)
+	end function
+	
+	public function add (name)
+		set add = new Field
+		add.init form_, name
+		fields_.add name, add
+	end function
+	
+	public function populate (rs)
+		dim records, r: set records = Iterators.record_kv(rs)
+		do while records.has_next
+			records.move_next
+			if fields_.exists(records.key) then
+				fields_(records.key).value = records.value
+			end if
+		loop
+	end function
+	
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''' Factory Methods
+	
+	public function text (name)
+		set text = add(name)
+		set text.formatter = FieldFormatters.text_input
+	end function
+	
+	public function textarea (name)
+		set textarea = add(name)
+		set textarea.formatter = FieldFormatters.text_area
+	end function
+	
+	public function submit (name)
+		set submit = add(name)
+		set submit.formatter = FieldFormatters.submit
+		submit.label = StringUtil.humanize(name)
+		submit.db_field = empty
+	end function
+	
+	public function hidden (name)
+		set hidden = add(name)
+		set hidden.formatter = FieldFormatters.hidden
+		hidden.label = empty
+	end function
+	
+	public function select_one (name, iterator)
+		set select_one = add(name)
+		set select_one.formatter = FieldFormatters.select_one(iterator)
+	end function
+end class
+
+class FormFieldBuilderClass
+	public function optional
+		
+		set optional = me
+	end function
+end class
+
+class FormErrorsCollection
+	private errors_
+	private form_
+	
+	private sub class_initialize
+		set errors_ = List()
+	end sub
+	
+	public function init (form)
+		set form_ = form
+	end function
+	
+	public function iterator
+		set iterator = errors_.iterator
+	end function
+	
+	public function add (message)
+		errors_.add(message)
+	end function
+	
+	public function print
+		if METHOD = "POST" and not form_.valid then
+			Response.write "<ul class='errors'>"
+			dim itr: set itr = errors_.iterator
+			do while itr.has_current
+				prints "<li>\$</li>", Array(itr.value)
+				itr.move_next
+			loop
+			Response.write "</ul>"
+		end if
+	end function
+end class
+
+class FormModule
+	public default property get construct (name)
+		set construct = new FormClass
+		construct.init(name)
+	end property
+end class
+dim Form: set Form = new FormModule

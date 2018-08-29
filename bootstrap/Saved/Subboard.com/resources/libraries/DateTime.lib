@@ -1,0 +1,391 @@
+const SUNDAY = 1
+const MONDAY = 2
+const TUESDAY = 3
+const WEDNESDAY = 4
+const THURSDAY = 5
+const FRIDAY = 6
+const SATURDAY = 7
+
+class TimeClass
+	public h, n, s
+	
+	public sub init (h2, n2, s2)
+		h = fix(h2)
+		n = fix(n2)
+		s = fix(s2)
+	end sub
+	
+	public property get i
+		i = iif(h mod 12 = 0, 12, h mod 12)
+	end property
+	
+	public property get p
+		p = iif(h > 11, "PM", "AM")
+	end property
+
+	public function iso
+		iso = sprintf("%02s:%02s:%02s", Array(h, n, s))
+	end function
+	
+	public function cmp (other)
+		cmp = strComp(iso, other.iso)
+	end function
+	
+	public function cmp_over (other, pivot)
+		dim a, b, z
+		a = iso
+		b = other.iso
+		z = pivot.iso
+		
+		cmp_over = strComp(a, b) * iif((strComp(a, z) >= 0) xor (strComp(b, z) >= 0), -1, 1)
+	end function
+	
+	public function plus (span)
+		dim h2, n2, s2
+		
+		s2 = s + (span.seconds mod 60)
+		n2 = s2 \ 60 + n + (fix(span.minutes) mod 60)
+		h2 = n2 \ 60 + h + (fix(span.hours) mod 24)
+		
+		set plus = DateTime.time(h2 mod 24, n2 mod 60, s2 mod 60)
+	end function
+end class
+
+class TimeModule
+	private iso_re_
+	
+	private sub class_initialize
+		set iso_re_ = new RegExp: iso_re_.pattern = "(\d\d)?:?(\d\d)?:?(\d\d)?"
+	end sub
+	
+	public default property get construct (h, n, s)
+		set construct = new TimeClass
+		construct.init h, n, s
+	end property
+	
+	public function from_iso (str)
+		dim matches: set matches = iso_re_.execute(str)
+		if matches.count = 0 then
+			set from_iso = nothing
+		else
+			dim parts: set parts = matches(0).subMatches
+			set from_iso = construct(parts(0), parts(1), parts(2))
+		end if
+	end function
+	
+	public function from_vb (vb)
+		set from_vb = construct(hour(vb), minute(vb), second(vb))
+	end function
+	
+	public function from_string (str)
+		if isDate(str) then
+			set from_string = from_vb(cDate(str))
+		else
+			set from_string = nothing
+		end if
+	end function
+	
+end class
+dim Time: set Time = new TimeModule
+
+'===============================================================================================================================
+
+class DateClass
+	public y, m, d
+	
+	public sub init (y2, m2, d2)
+		y = y2
+		m = m2
+		d = d2
+	end sub
+	
+	' Accurate only after the Gregorian transition (1752 in England)
+	public property get w
+		dim mon
+		select case m
+			case 1: mon = iif(Date.is_leap_year(y), 6, 0)
+			case 2: mon = iif(Date.is_leap_year(y), 2, 3)
+			case 3: mon = 3
+			case 4: mon = 6
+			case 5: mon = 1
+			case 6: mon = 4
+			case 7: mon = 6
+			case 8: mon = 2
+			case 9: mon = 5
+			case 10: mon = 0
+			case 11: mon = 3
+			case 12: mon = 5
+		end select
+		dim cent: cent = 2 * (3 - ((y \ 100) mod 4))
+		dim year: year = (y mod 100)
+		
+		w = 1 + (cent + year + (year \ 4) + mon + d) mod 7
+	end property
+	
+	public function iso
+		iso = sprintf("%04u-%02u-%02u", Array(y, m, d))
+	end function
+	
+	public function cmp (other)
+		cmp = strComp(iso, other.iso)
+	end function
+	
+	public function plus (other)
+		set plus = Date(y + other.y, m + other.m, d + other.d)
+	end function
+end class
+
+class DateModule
+	private iso_re_
+	private today_
+	
+	private sub class_initialize
+		set iso_re_ = new RegExp: iso_re_.pattern = "(\d\d\d\d)?-?(\d\d)?-?(\d\d)?"
+		set today_ = from_vb(now)
+	end sub
+	
+	public default property get construct (y, m, d)
+		set construct = new DateClass
+		construct.init y, m, d
+	end property
+	
+	public property get regex
+		set regex = iso_re_
+	end property
+	
+	public property get today
+		set today = today_
+	end property
+	
+	public function from_iso (str)
+		dim matches: set matches = iso_re_.execute(str)
+		if matches.count = 0 then
+			set from_iso = nothing
+		else
+			dim parts: set parts = matches(0).subMatches
+			set from_iso = construct(parts(0), parts(1), parts(2))
+		end if
+	end function
+	
+	public function from_vb (vb)
+		set from_vb = construct(year(vb), month(vb), day(vb))
+	end function
+	
+	public function from_string (str)
+		if isDate(str) then
+			set from_string = from_vb(cDate(str))
+		else
+			set from_string = nothing
+		end if
+	end function
+	
+	public function is_leap_year (y)
+		is_leap_year = (y mod 4 = 0) and (y mod 100 <> 0)
+	end function
+end class
+dim Date: set Date = new DateModule
+
+'===============================================================================================================================
+
+class DateFormatterClass
+	public function format (char, dt)
+		select case char
+			case "\": format = "\"
+			case "'": format = """"
+			
+			case "h": format = dt.h
+			case "H": format = (dt.h - 1) mod 12 + 1
+			case "n": format = dt.n
+			case "s": format = dt.s
+			case "p": format = iif(dt.h > 12, "pm", "am")
+			case "P": format = iif(dt.h > 12, "PM", "AM")
+			
+			case "y": format = dt.y
+			case "m": format = dt.m
+			case "M": format = monthname(dt.m)
+			case "d": format = dt.d
+			case "w": format = dt.w
+			case "W": format = weekdayName(dt.w)
+		end select
+	end function
+end class
+dim DateFormatter: set DateFormatter = new DateFormatterClass
+	
+class DatetimeModule
+	private now_
+	private iso_re_
+	
+	private sub class_initialize
+		set now_ = Time.from_vb(global("now"))
+		set iso_re_ = new RegExp: iso_re_.pattern = "(\d\d\d\d)-(\d\d)-(\d\d).(\d\d):(\d\d):(\d\d)"
+	end sub
+	
+	public function now
+		set now = now_
+	end function
+	
+	public function sprintf (template, dt)
+		sprintf = StringUtil.format(template, dt, DateFormatter, Str.empty)
+	end function
+	
+	public function strftime (template)
+		set strftime = Str.empty
+		
+		' All indices should increase monotonically throughout the function
+		dim start	'Int:    Index of the substring handled this pass.
+		dim pstart	'Int:    Index of the current pattern.
+		dim i       'Int:    Index currently under consideration
+		dim char	'String: Character currently under consideration
+		do while start <= length
+			pstart = inStr(start, template, "%", 0)
+			if pstart > 0 then
+				strftime.add mid(template, start, pstart - start)
+				
+				i = pstart + 1
+				char = mid(template, i, 1)
+				
+				
+				'start = 
+			else
+				strftime.add right(template, length - start + 1)
+				exit function
+			end if
+		loop
+		
+		'dim i, j, length, char, pad, part, width, part_len
+'		length = len(template)
+'		
+'		do while i < length
+'			i = i + 1
+'			j = inStr(i, template, "\", 0)
+'			if j > 0 then
+'				sb.add mid(template, i, j - i)
+'				j = j + 1
+'				i = j
+'				char = mid(template, i, 1)
+'				
+'				if isNumeric(char) then
+'					pad = iif(char = 0, "0", " ")
+'					do
+'						i = i + 1
+'						char = mid(template, i, 1)
+'					loop while isNumeric(char)
+'					width = int(mid(template, j, i - j))
+'				else
+'					width = null
+'				end if
+'				
+'				part = formatter.format(char, data)
+'				
+'				if isNull(width) then
+'					sb.add part
+'				else
+'					part_len = len(part)
+'					if part_len < width then
+'						sb.add string(width - part_len, pad)
+'						target.add part
+'					else
+'						sb.add left(part, width)
+'					end if
+'				end if
+'			else
+'				sb.add right(template, length - i + 1)
+'				i = length
+'			end if
+'		loop
+'		
+'		format = sb.string
+	end function
+end class
+dim Datetime: set Datetime = new DatetimeModule
+
+'===============================================================================================================================
+
+class TimeSpanClass
+	public seconds
+	
+	public property get minutes
+		minutes = seconds / 60
+	end property
+	
+	public property let minutes (val)
+		seconds = val * 60
+	end property
+	
+	public property get hours
+		hours = seconds / 3600
+	end property
+	
+	public property let hours (val)
+		seconds = val * 3600
+	end property
+	
+	public property get days
+		days = seconds / 86400
+	end property
+	
+	public property let days (val)
+		seconds = val * 86400
+	end property
+	
+	public function plus (other)
+		set plus = TimeSpan.seconds(seconds + other.seconds)
+	end function
+	
+	public function minus (other)
+		set minus = TimeSpan.seconds(seconds - other.seconds)
+	end function
+	
+	public function times (scalar)
+		set times = TimeSpan.seconds(seconds * scalar)
+	end function
+	
+	public function div (other)
+		if isObject(other) then
+			div = seconds / other.seconds
+		else
+			set div = TimeSpan.seconds(seconds / other)
+		end if
+	end function
+end class
+
+class TimeSpanModule
+	private iso_time_re_
+	
+	private sub class_initialize
+		set iso_time_re_ = new RegExp: iso_time_re_.pattern = "(\d\d)?:?(\d\d)?:?(\d\d)?"
+	end sub
+	
+	public function seconds (val)
+		set seconds = new TimeSpanClass
+		seconds.seconds = val
+	end function
+	
+	public function minutes (val)
+		set minutes = new TimeSpanClass
+		minutes.minutes = val
+	end function
+	
+	public function hours (val)
+		set hours = new TimeSpanClass
+		hours.hours = val
+	end function
+	
+	public function days (val)
+		set days = new TimeSpanClass
+		days.days = val
+	end function
+	
+	public function iso_time (str)
+		dim matches: set matches = iso_time_re_.execute(str)
+		if matches.count = 0 then
+			set iso_time = nothing
+		else
+			dim parts: set parts = matches(0).subMatches
+			set iso_time = new TimeSpanClass
+			iso_time.seconds = parts(2) + 60*parts(1) + 3600*parts(0)
+		end if
+	end function
+end class
+
+dim TimeSpan: set TimeSpan = new TimeSpanModule

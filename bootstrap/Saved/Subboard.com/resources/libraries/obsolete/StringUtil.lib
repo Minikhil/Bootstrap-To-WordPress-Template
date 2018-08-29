@@ -1,0 +1,23 @@
+class StringUtilModule
+	function sentence_case (str)
+		sentence_case = uCase(left(str, 1)) & lCase(mid(str, 2))
+	end function
+	
+	function identifier_case (str)
+		identifier_case = replace(lCase(str), " ", "_")
+		identifier_case = replace(identifier_case, "/", "-")
+	end function
+	
+	function humanize (identifier)
+		dim words: words = split(identifier, "_")
+		dim i: for i = 0 to uBound(words)
+			words(i) = sentence_case(words(i))
+		next
+		humanize = join(words, " ")
+	end function
+	
+	function pad (str, width)
+		pad = space(width - len(str)) & str
+	end function
+end class
+dim StringUtil: set StringUtil = new StringUtilModule

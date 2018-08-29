@@ -1,0 +1,82 @@
+<!-- #include virtual='/resources/libraries/util2.lib' -->
+
+<%
+	dim category: category = "Domestic Students"
+%>
+
+<!-- #include virtual='/resources/includes/doctype.inc' -->
+
+<html lang='en-us'>
+	<head>
+		<!-- #include virtual='/insurance/resources/includes/head.inc' -->
+	</head>
+	<body>
+		<!-- #include virtual='/insurance/resources/includes/header.inc' -->
+		
+		<div id='content'>
+			<h2>Domestic Students</h2>
+			
+			<h3>University Policy</h3>
+			<p><strong>The University requires all students taking 12 credits undergraduate or 9 hours graduate study to have adequate health insurance coverage.</strong> All students covered under this university policy will automatically be charged for the University plan on the first qualifying tuition bill for the semester. All others who wish to enroll may do so by <a href='domestic_enroll.asp'>clicking here</a>. Students who have adequate private coverage may waive the plan by providing proof of comparable coverage and submitting an on-line waiver by the due date of their tuition bill for the semester. Comparable coverage must be in effect on or before the first day of classes.</p>
+			
+			
+			<!--<p><strong><font size ="4">Important: The 2011-2012 waiver window will open after July 11, 2011.  </font></strong></p>-->
+
+		
+			<h4>Please review the criteria for waiver:</h4>  
+			<ul>
+			<li>The coverage used for waiver must meet or exceed the coverage provided by the school. </li>
+			<li>Emergency only coverage in the Buffalo, Western New York area will NOT qualify for waiver. </li>
+			<li>Any policy used to waive insurance must be in effect no later than September 1st , 2011.</li>
+			</ul>
+			
+
+
+
+
+			<h3>2011 &ndash; 2012 Important Links</h3>
+			<ul>
+				<strong><li><a href='http://www.aetnastudenthealth.com/stu_conn/student_connection.aspx?groupID=100116'> 2011 &ndash; 2012 Benefit Information</a></li></strong>
+			    <!--<strong><li><a href='domestic_waive.asp'>2011 &ndash; 2012 Domestic Waiver</a></li></strong>-->
+				<strong><li><a href='domestic_enroll.asp'>2011 &ndash; 2012 Domestic Enroll</a></li></strong>
+				<li><a href='forms/2011-2012/domestic/stepstowaive2011-2012.pdf'>Steps to a successful waiver</a></li>
+				<li><a href='http://www.aetnastudenthealth.com/stu_conn/student_connection.aspx?groupID=100116'>Print Your ID Card</a></li>
+				<li><a href='forms/2011-2012/domestic/brochure1112.pdf'> 2011 &ndash; 2012 Student Health Insurance Plan Brochure</a></li>
+				<li><a href='forms/2010-2011/domestic/AETNA_TOP_TEN_2010-2011.pdf'>AETNA Top 10 Important Insurance Facts</a></li>
+
+			</ul>
+<br>
+<!--
+			<h3>Federal Health Care Reform Act</h3>
+			<p>
+			<b>Health Care Reform Update</b>:
+			<p>Students enrolled on the Aetna Student Health Plan who move back to their parents' plans (due to Health Care Reform laws only) may be eligible for partial premium pro-rata refunds.</p>
+			<p><b>Health care reform changes mean many students have new coverage options</b><br>
+			One provision of the Patient Protection and Affordable Care Act (PPACA) requires many health plans to offer dependent coverage up to age 26. This provision of the law affects plans when they renew or become effective on or after September 23, 2010.  This means some of your students may be able to return to their family's health plan during the academic year. We want to help the students by being flexible during this transition period. Students who provide proof of enrollment in family coverage for the Spring 2011 term resulting from the PPACA provision only may be able to obtain a premium refund for the Spring term. Forms and instructions on link below.</p>
+			<p><b>General guidelines for the policy</b></p>
+			<ul>
+			<li>For the 2010 - 2011 policy year, refunds will be available ONLY between January 1, 2011 and February 1, 2011 and ONLY for the entire Spring term.  No other pro-rata periods will be available and no extensions for the deadline will be made.</li>
+			<li>There are no Fall 2010 semester refunds. </li> 
+			<b>To receive a refund for the Spring 2011 term, the student must be compliant on all counts below:</b>
+			<li>Document their enrollment in family coverage for the spring/summer term as a result of the PPACA dependent age 26 provision (note: there may not exist a lapse in coverage between the student and family plans).</li>
+			<li>Provide this documentation between 1/1/11 and 2/1/11. No extensions will be granted.</li>
+			<li>Request a premium refund for coverage for the entire Spring term. Aetna will not prorate premiums on any other basis (no daily or monthly prorations).</li>
+			<li>NOT have submitted any claims or incurred any services under the Aetna Student Health plan
+			during the Spring term.</li>
+			Note that any dependents of the student will also be terminated on the same date as the student.
+			Dependents may not remain covered if the student is not covered.
+			</p>
+		
+			<li><a href='forms/2010-2011/domestic/pro-ratarefundrequest2010-2011.pdf'>2010-2011 PRO RATA PREMIUM REFUND REQUEST FORM</a></li>
+
+			</ul><br><br>
+-->
+		</div>
+		
+		<div id='secondary'>
+			<!-- #include virtual='/insurance/resources/includes/sidebar.inc' -->
+		</div>
+		
+		<!-- #include virtual='/resources/includes/bottom_navigation_new.inc' -->
+	</body>
+</html>

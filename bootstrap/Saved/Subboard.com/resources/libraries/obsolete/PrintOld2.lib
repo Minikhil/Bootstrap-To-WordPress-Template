@@ -1,0 +1,223 @@
+function print (val)
+	Response.write val
+end function
+
+class FormatterSingleton
+	private re_
+	private re2_
+	
+	private sub CLASS_INITIALIZE
+		set re_ = new RegExp
+		re_.pattern = "%(?:(\d+)$)?([+-0])?(\*|\d+)?(?:\.(\*|\d+))?([diufFeEgGxXoscpn%])([^%]*)"
+		re_.ignoreCase = true
+		re_.global = true
+		re_.multiLine = true
+		
+		set re2_ = new RegExp
+		re2_.pattern = "%(q)?(['\-+ #0]*)(\*|\d+)?(?:\.(\*|\d+))?[hljztL]*([a-zA-Z%])([^%]*)"
+		re2_.ignoreCase = false
+		re2_.global = true
+		re2_.multiLine = true
+	end sub
+	
+	function format_to (template, args, target)
+		template = Str.parse(template).value
+		dim i: i = 0
+		dim data, output
+		dim parameter, flags, width, precision, format, rest
+		
+		dim matches, s: set matches = re_.execute(template)
+		if matches.count = 0 then
+			target.add template
+		else
+			target.add left(template, matches(0).firstIndex)
+			dim m: for each m in matches
+				set s = m.subMatches
+				parameter = s(0)
+				flags = s(1)
+				width = s(2)
+				precision = s(3)
+				format = s(4)
+				rest = s(5)
+				
+				if format = "%" then
+					print "%"
+				else
+					if width = "*" then
+						width = args(i)
+						i = i + 1
+					end if
+					
+					if precision = "*" then
+						precision = args(i)
+						i = i + 1
+					end if
+					
+					if isEmpty(parameter) then
+						data = args(i)
+						i = i + 1
+					else
+						data = args(parameter)
+					end if
+					
+					select case format
+						case "c": output = chr(data)
+						
+						case "s": output = data
+						
+						case "d": output = cLng(data)
+						case "i": output = cLng(data)
+						case "o": output = oct(data)
+						case "u": output = abs(cLng(data))
+						case "x": output = lCase(hex(data))
+						case "X": output = hex(data)
+						
+						case "g": output = lCase(cDbl(data))
+						case "G": output = cDbl(data)
+					end select
+					
+					target.add output
+				end if
+				
+				target.add rest
+			next
+		end if
+	end function
+	
+	private function inc (byref n)
+		inc = n
+		n = n + 1
+	end function
+	
+	private function digits (value, precision)
+		digits = cStr(value)
+		if precision > len(digits) then
+			digits = string(precision - len(digits), "0") & digits
+		elseif precision = 0 and value = 0 then
+			digits = vbNullString
+		end if
+	end function
+	
+	public function better_format_to (template, args, target)
+		dim i, data, output
+		dim parameter, flags, width, precision, format, rest
+		dim is_float, is_decimal, is_integer
+		
+		dim matches, s: set matches = re2_.execute(template)
+		if matches.count = 0 then
+			target.add template
+		else
+			target.add left(template, matches(0).firstIndex)
+			dim m: for each m in matches
+				set s = m.subMatches
+				parameter = s(0)
+				flags = s(1)
+				width = fix(s(2))
+				precision = s(3)
+				format = lcase(s(4))
+				rest = s(5)
+				
+				if format = "%" then
+					print "%"
+				else
+					if width     = "*"    then width     = args(inc(i))
+					if precision = "*"    then precision = args(inc(i))
+					if isEmpty(parameter) then parameter = inc(i)
+					
+					data = args(parameter)
+					if format = "i" then format = "d"
+					
+					select case format
+						case "c"
+							output = chrW(data)
+						
+						case "s"
+							if isEmpty(precision) then
+								output = data
+							else
+								output = left(data, precision)
+							end if
+						
+						case "d":
+							output = digits(abs(data), precision)
+							
+							if inStr(flags, "'") then
+								output = join(Str(output).slice_right(3), ",")
+							end if
+							
+							if value_ < 0 then
+								output = "-" & output
+							else
+								if inStr(flags, "+") then
+									output = "+" & output
+								elseif inStr(flags, " ") then
+									output = " " & output
+								end if
+							end if
+						
+						case "u"
+							output = digits(abs(data), precision)
+							
+							if inStr(flags, "'") then
+								output = join(Str(output).slice_right(3), ",")
+							end if
+						
+						case "o"
+							output = digits(oct(data), precision)
+							if inStr(flags, "#") and left(output, 0) <> "0" then output = "0" & output
+						
+						case "x"
+							output = digits(hex(data))
+							if inStr(flags, "#") then output = "0X" & output
+						
+						case "f"
+							if isEmpty(precision) then precision = 6
+							output = formatNumber(data, precision, TristateTrue, TristateFalse, Tristate(inStr(flags, "'")))
+							if precision = 0 then output = output & "."
+							
+							if data_ >= 0 then
+								if inStr(flags, "+") then
+									output = "+" & output
+								elseif inStr(flags, " ") then
+									output = " " & output
+								end if
+							end if
+					end select
+					
+					if inStr("xeg", format) and format = s(4) then output = lcase(output)
+					
+					if width > len(output) then
+						if inStr(flags, "-") then 'left-justify
+							output = output & space(width - len(output))
+						else 'right-justify
+							if isEmpty(precision) and inStr(flags, "0") then
+								output = string(width - len(output), "0") & output
+							else
+								output = space(width - len(output)) & output
+							end if
+						end if
+					end if
+					
+					target.add output
+				end if
+				
+				target.add rest
+			next
+		end if
+	end function
+end class
+dim Formatter: set Formatter = new FormatterSingleton
+
+function xprintf(template, args)
+	Formatter.format_to template, args, new PrintfHelper
+end function
+
+function printf(template, args)
+	Formatter.better_format_to template, args, new PrintfHelper
+end function
+
+class PrintfHelper
+	public default property get add (part)
+		print part
+	end property
+end class

@@ -1,0 +1,125 @@
+function print (str)
+	Response.write str
+end function
+
+function gen_format (template, arg_array, target)
+	dim itr: set itr = Iterator.from_string(template)
+	dim args
+	if exists(arg_array) then set args = Iterator.from_array(arg_array)
+	
+	dim group_digits, left_align, display_sign, space_sign, alt_display, pad_with_zero, pad_char
+	dim width, precision, format
+	dim output
+	
+	do
+		
+		target.add itr.seek("%")
+		
+		if not itr.has_current then exit do
+		
+		group_digits = false
+		left_align = false
+		display_sign = false
+		space_sign = false
+		alt_display = false
+		pad_with_zero = false
+		pad_char = " "
+		width = empty
+		precision = empty
+		format = empty
+		
+		do
+			itr.move_next
+			select case itr.value
+				case "'": group_digits = true
+				case "-": left_align = true
+				case "+": display_sign = true
+				case " ": space_sign = true
+				case "#": alt_display = true
+				case "*": width = cInt(args.pop)
+				case "0": pad_with_zero = true
+				case else: exit do
+			end select
+		loop
+		
+		do while isNumeric(itr.value)
+			width = cInt(width & itr.pop)
+		loop
+		
+		if itr.value = "." then
+			itr.move_next
+			if itr.value = "*" then
+				precision = cInt(args.pop)
+				itr.move_next
+			end if
+			do while isNumeric(itr.value)
+				precision = cInt(precision & itr.pop)
+			loop
+		end if
+		
+		format = itr.pop
+		select case format
+			case "%": output = "%"
+			
+			case "c": output = chr(args.pop)
+			
+			case "s": output = args.pop
+			
+			case "d": output = cLng(args.pop)
+			case "i": output = cLng(args.pop)
+			case "o": output = oct(args.pop)
+			case "u": output = abs(cLng(args.pop))
+			case "x": output = lCase(hex(args.pop))
+			case "X": output = hex(args.pop)
+			
+			case "g": output = lCase(cDbl(args.pop))
+			case "G": output = cDbl(args.pop)
+		end select
+		
+		if format = "s" then
+			
+			if not isEmpty(precision) and len(output) > precision then
+				if left_align then
+					output = left(output, precision)
+				else
+					output = right(output, precision)
+				end if
+			end if
+			
+		elseif inStr("diouxX", format) then
+			
+			if pad_with_zero           then pad_char = "0"
+			if precision > len(output) then output = string(precision - len(output), "0") & output
+			
+			if group_digits and inStr("idu", format)     then output = IntUtil.humanize(output)
+			if alt_display  and strComp(format, "x") = 0 then output = ("0" & format) & output
+			
+		end if
+		
+		if not isEmpty(width) and width > len(output) then
+			if left_align then
+				output = output & string(width - len(output), pad_char)
+			else
+				output = string(width - len(output), pad_char) & output
+			end if
+		end if
+		
+		target.add output
+	loop
+	
+	'assign gen_format, print.result
+end function
+
+function printf(template, arg_array)
+	gen_format template, arg_array, new PrintfHelper
+end function
+
+class PrintfHelper
+	public default property get add (part)
+		print part
+	end property
+	
+	'public property get result
+		'result = null
+	'end property
+end class

@@ -1,0 +1,56 @@
+/* IE 6 and 7 */
+
+#search-query
+{
+	width: 147px;
+}
+
+.clear
+{
+	clear: both;
+}
+
+.table_layout_wrapper
+{
+	display: block;
+}
+
+ul {margin-left: 1.25em;} /* Otherwise it clips the bullets */
+
+#categories
+{
+	clear: both;
+	float: left;
+	display: block;
+	width: 100%;
+}
+
+#categories li
+{
+	float: left;
+	display: block;
+	width: 20%; /* IE screws up 20% */
+/*	height: 28px; */ /* Why was this here? It was messing up the HE site. */
+}
+
+/* IE 6 */
+
+* html #q
+{
+	width: 143px;
+}
+
+* html #news
+{
+	height: 1%;
+}
+
+* html .divisions
+{
+	height: 1%;
+}
+
+* html #footer
+{
+	height: 1%;
+}

@@ -1,0 +1,129 @@
+class HTMLBuilderModule
+	public function [new]
+		set [new] = new HTMLBuilderClass
+	end function
+end class
+dim HTMLBuilder: set HTMLBuilder = new HTMLBuilderModule
+
+class HTMLOutputStreamClass
+	private stream_
+	
+	private level_
+	
+	public function init (out)
+		set stream_ = OutputStream.new(out)
+		
+		set init = me
+	end function
+	
+	public property get indent
+		indent = string(level_ * 4, " ")
+	end property
+	
+	public function level_up:   level_ = level_ + 1: end function
+	public function level_down: level_ = level_ - 1: end function
+	
+	public function write (s)
+		stream_.write indent
+		stream_.write s
+		stream_.write VBLF
+	end function
+	
+	public function print (s)
+		write s
+		
+		set print = me ' method chaining
+	end function
+	
+	public function printf (template, args)
+		stream_.write indent
+		stream_.printf template, args
+		stream_.write VBLF
+		
+		set printf = me ' method chaining
+	end function
+	
+	public function close
+		stream_.close
+	end function
+	
+	' ------------------
+	
+	private function attr_list (attrs)
+		if exists(attrs) then
+			if isArray(attrs) then
+				set attrs = Map.literal(attrs)
+			end if
+			
+			set attr_list = Str.empty
+			with Iterator(attrs)
+				do while .has_current
+					if isEmpty(.value) then
+						attr_list.print " " & .key
+					elseif exists(.value) then
+						attr_list.printf " %s=""%!s""", Array(.key, .value)
+					end if
+					.move_next
+				loop
+			end with
+		else
+			attr_list = VBNULLSTRING
+		end if
+	end function
+	
+	public function open_tag (name, attrs)
+		printf "<%s%s>", Array(name, attr_list(attrs))
+		
+		level_up
+	end function
+	
+	public function empty_tag (name, attrs)
+		printf "<%s%s />", Array(name, attr_list(attrs))
+	end function
+	
+	public function close_tag (name)
+		level_down
+		
+		printf "</%s>", Array(name)
+	end function
+	
+	public function tag (name, attrs)
+		set tag = (new HTMLTagPrinterEphemeron).init(me, name, attrs)
+	end function
+	
+	public function inline_tag (name, attrs, contents)
+		printf "<%s%s>%s</%s>", Array(name, attr_list(attrs), contents, name)
+	end function
+end class
+
+class HTMLTagPrinterEphemeron
+	private html_
+	private name_
+	
+	public function init(html, name, attrs)
+		set html_ = html
+		name_ = name
+		
+		html_.open_tag name_, attrs
+		
+		set init = me
+	end function
+	
+	private sub class_terminate
+		html_.close_tag name_
+	end sub
+	
+	public function write (s)
+		html_.write s
+	end function
+	
+	public function print (s)
+		html_.print s
+		set print = me
+	end function
+	
+	public function printf (template, args)
+		html_.printf template, args
+		set printf = me
+	end function
+end class

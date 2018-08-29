@@ -1,0 +1,135 @@
+#header h2 {
+	float: left;
+	font-size: 3.5em;
+	margin-left: .2em;
+	margin-top: 40px;
+}
+
+#categories {
+	display: block;
+	background-color: #194183;
+}
+
+#categories li {
+	display: block;
+	float: left;
+	width: 20%;
+}
+
+#categories a {
+	display: block;
+	height: 22px;
+	padding: 4px 0;
+}
+
+#categories a:hover {
+	background: #3b5d95;
+}
+
+h3 {
+	margin-top: 18px;
+}
+
+h4 {
+	margin-top: 18px;
+	font-size: 14px;
+}
+
+/*----------------------------------120416-------------*/
+
+h5 {
+	color: #06f;
+	margin-top: 18px;
+	font-size: 14px;
+	font-style:normal;
+}
+
+
+h5 a {
+	color: #06f;
+	text-decoration: none;
+}
+			
+h5 a:hover {
+    color: #0cf;
+}
+
+ol, ul {
+	margin: 0 0 0 18px;
+}
+
+#local_navigation > li {
+	list-style-type: none;
+	margin-top: 1px;
+	background: #cdf;
+}
+
+#local_navigation > li > a > span, #local_navigation > li > span {
+	display: block;
+	padding: 8px 9px 9px;
+	font-size: 14px;
+}
+
+#local_navigation ul {
+	display: none;
+	list-style-type: none;
+	margin-left: 18px;
+	padding-bottom: 18px;
+}
+
+#local_navigation .current_category ul {
+	display: block;
+}
+
+#local_navigation .current_category, #local_navigation > li:hover {
+	background: #aac7ff;
+}
+
+#local_navigation #current_page > span {
+	font-weight: bold;
+}
+
+a[href$=".pdf"]:after {
+/*	content: " (PDF)";*/
+	content: url("../images/icon_pdf.gif");
+}
+
+body {
+	line-height: 18px;
+}
+
+div.vcard {
+	width: auto;
+	margin-left: 0;
+}
+
+
+
+table.prices {
+	border-collapse: collapse;
+}
+
+.prices td, .prices th {
+	padding: 9px;
+	border: 1px solid black;
+}
+
+.prices th {
+	font-weight: bold;
+}
+
+.prices td {
+	text-align: center;
+	vertical-align: center;
+}
+
+
+
+.big-important-link {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.big-important-link:after {
+	content: " »";
+}

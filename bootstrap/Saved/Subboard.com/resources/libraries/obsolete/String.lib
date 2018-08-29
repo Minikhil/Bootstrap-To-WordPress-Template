@@ -1,0 +1,145 @@
+class StringClass
+	private function MIN_ARRAY_SIZE
+		MIN_ARRAY_SIZE = 3
+	end function
+	
+	private function GRANTED_HEAD_ROOM
+		GRANTED_HEAD_ROOM = 2
+	end function
+	
+	private finished_
+	private data_
+	private size_
+	
+	public function init (val)
+		finished_ = cStr(val)
+		set init = me
+	end function
+	
+	public function init_literal (raw)
+		dim start: start = 1
+		dim slash: slash = inStr(start, raw, "\")
+		
+		do while slash > 0
+			add mid(raw, start, slash - start)
+			start = slash + 2
+			
+			select case mid(raw, slash + 1, 1)
+				case "\": add "\"
+				case "'": add """"
+				
+				case "0": add VBNULLCHAR
+				case "a": add chr(7)
+				case "b": add chr(8)
+				case "e": add chr(27)
+				case "f": add VBFORMFEED
+				case "n": add VBLF
+				case "r": add VBCR
+				case "t": add VBTAB
+				case "v": add VBVERTICALTAB
+				
+				case "d":
+					add chr(mid(raw, start, 3))
+					start = start + 3
+				case "o":
+					add chr("&o" & mid(raw, start, 3))
+					start = start + 3
+				case "x":
+					add chr("&h" & mid(raw, start, 2))
+					start = start + 2
+				case "u":
+					add chrW("&h" & mid(raw, start, 4))
+					start = start + 4
+			end select
+			
+			slash = inStr(start, raw, "\")
+		loop
+		
+		add right(raw, len(raw) - start + 1)
+		
+		set init_literal = me
+	end function
+	
+	public default property get value
+		if (size_ > 0) then
+			finished_ = finished_ & join(data_, vbNullString)
+			data_ = empty
+			size_ = 0
+		end if
+		value = finished_
+	end property
+	
+	public property let value (val)
+		init(val)
+	end property
+	
+	public function add (s)
+		size_ = size_ + 1
+		if (isEmpty(data_)) then
+			redim data_(MIN_ARRAY_SIZE)
+		elseif (size_ > uBound(data_)) then
+			redim preserve data_(Float(uBound(data_) * GRANTED_HEAD_ROOM).ceil)
+		end if
+		data_(size_ - 1) = cStr(s)
+	end function
+	
+	public function printf (template, args)
+		gen_format template, args, me
+		set printf = me
+	end function
+	
+	public function sentence_case
+		sentence_case = uCase(left(value_, 1)) & lCase(mid(value_, 2))
+		set sentence_case = Str(sentence_case)
+	end function
+	
+	public function identifier_case
+		identifier_case = replace(lCase(value), " ", "_")
+		identifier_case = replace(identifier_case, "/", "-")
+		set identifier_case = Str(identifier_case)
+	end function
+	
+	public function humanize
+		dim words: words = split(value, "_")
+		dim i: for i = 0 to uBound(words)
+			words(i) = sentence_case(words(i))
+		next
+		set humanize = Str(join(words, " "))
+	end function
+	
+	public function pad (width)
+		pad = Str(space(width - len(value_)) & value)
+	end function
+	
+	public function marshall
+		marshall = value
+	end function
+end class
+
+class StringModule
+	public default property get construct (val)
+		set construct = (new StringClass).init(val)
+	end property
+	
+	public function parse (val)
+		set parse = construct(val)
+	end function
+	
+	public function blank
+		set blank = (new StringClass).init(vbNullString)
+	end function
+	
+	public function literal (val)
+		set literal = (new StringClass).init_literal(val)
+	end function
+	
+	public function unmarshall (data)
+		set unmarshall = construct(data)
+	end function
+end class
+dim String: set String = new StringModule
+dim Str: set Str = String
+
+function sprintf (template, args)
+	set sprintf = Str.blank.printf(template, args)
+end function

@@ -1,0 +1,66 @@
+import "DataModel"
+
+class FormClass
+	private data_
+	
+	public function init (model)
+		set data_ = model.construct
+		data_.load Request.Form
+		
+		set init = me
+	end function
+	
+	public property get data
+		set data = data_
+	end property
+	
+	'public function field (attr, typ)
+	'	' TODO
+	'end function
+	'
+	'public function text_input (name)
+	'	set text_input = (new FormFieldPrintingEphemeron).init(data_(name), new TextInputPrinterClass)
+	'	
+	'	with new FormFieldPrintingEphemeron
+	'		
+	'	end with
+	'end function
+end class
+
+'class FormField
+'	private data_
+'	private label_
+'	
+'	public function to_string
+'		to_string = sprintf()
+'	end function
+'end class
+
+'class FormFieldPrintingEphemeron
+'	private field_
+'	private type_
+'	
+'	private label_
+'	
+'	public function init (field, typ)
+'		field_ = field
+'		type_ = typ
+'		
+'		label_ = String(field_.name).humanize
+'	end function
+'	
+'	private sub CLASS_TERMINATE
+'		printf("<div class='field %s'><label for='%s'>%s</label>%s</div>", Array(typ, name, label, element))
+'	end sub
+'	
+'	public property let label_ (label)
+'		label_ = label
+'	end property
+'end class
+
+class FormModule
+	public default property get construct (data_model)
+		set construct = (new FormClass).init(data_model)
+	end property
+end class
+dim Form: set Form = new FormModule

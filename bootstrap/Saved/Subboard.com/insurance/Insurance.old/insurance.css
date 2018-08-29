@@ -1,0 +1,417 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+	background-color: #C0C0C0;
+	padding: 0px;
+	margin: 0px;
+    width: 100%;
+}
+
+a:link, a:visited {
+    color: #000;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #00AEEF;
+    text-decoration: underline;
+}
+
+div#clear {
+    clear: both;
+}
+
+/*Container - Holds the Body*/
+div#container {
+    background-color: #FFF;
+    width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*Header - Holds Logo and Navigation Within */
+div#header {
+    position: relative;
+    display: inline-block;
+    width: 942px;
+    height: 96px;
+    padding: 10px 10px 10px 10px;
+    overflow: hidden;
+}
+
+div#logo {
+    position: absolute;
+}
+
+div#search {
+    position: absolute;
+    display: inline;
+    width: 382px;
+    bottom: 60px;
+    right: 0px;
+}
+
+#search input[type="text"] {
+    background: url("images/search.png") no-repeat 10px 6px #FCFCFC;
+    border: 1px solid #D1D1D1;
+    font: bold 12px Arial,Helvetica,Sans-serif;
+    color: #BEBEBE;
+    width: 150px;
+    padding: 6px 15px 6px 35px;
+    -webkit-appearance: none;
+    -webkit-box-sizing: content-box;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+    -webkit-transition: all 0.7s ease 0s;
+    -moz-transition: all 0.7s ease 0s;
+    -o-transition: all 0.7s ease 0s;
+    transition: all 0.7s ease 0s;
+}
+
+#search input[type="text"]:focus {
+    width: 315px;
+}
+
+div#navigation {
+    position: absolute;
+    display: inline-block;
+    width: 451px;
+    bottom: 0px;
+    right: 0px;
+    overflow: auto;
+}
+
+div#menu {
+    padding: 0px;
+}
+
+#menu li {
+    display: inline;
+    white-space: nowrap;
+}
+
+#menu li a {
+    font-family: Arial;
+    font-size: 16px;
+    text-decoration: none;
+    float: left;
+    padding: 10px;
+    background-color: #00AEEF;
+    color: #FFF;
+    white-space: nowrap;
+}
+
+#menu li a:hover {
+    background-color: #2586D7;
+    margin-top: -2px;
+    padding-bottom: 12px;
+    white-space: nowrap;
+}
+
+/* Vector & Slider */
+div#vector {
+    background-color: #00AEEF;
+    width: 940px;
+    height: 216px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px 10px 10px 10px;
+}
+
+div#slider {
+    width: 940px;
+    height: 216px;
+}
+
+/* Content Container */
+div#wrapper {
+    background-color: #FFF;
+    position: relative;
+    width: 940px;
+    margin: 0px;
+    padding: 10px 10px 10px 10px;
+}
+
+/* Index Styling */
+            div#left {
+                background-color: #FFF;
+                display: inline;
+                float: left;
+                width: 465px;
+                margin: 0px;
+                padding: 0px;
+            }
+            
+            #left h1 {
+                color: #000;
+                border-bottom: solid 2px #000;
+            }
+            
+            #left h2 {
+                color: #000;
+                border-bottom: solid 2px #000;
+            }
+            
+            div#right {
+                background-color: #FFF;
+                width: 470px;
+                display: inline;
+                float: right;
+                margin: 0px;
+                padding: 0px;
+            }
+            
+            #box {
+                margin: 0;
+                padding: 0;
+                width: 470px;
+                list-style: none;
+            }
+            
+            #box li {
+                background: url("../images/box.gif") 0 100% repeat-x repeat-y;
+                padding: 0px;
+                margin: 8px 0 0 0;
+                display: block;
+            }
+                
+            #box li p {
+                background: #EAEAEA;
+                padding: 10px 4px 0 7px;
+                margin: 0;
+                border-left: 14px solid #939393;
+                -moz-border-radius: 0px 0px 0px 15px;
+                border-radius: 0px 0px 0px 15px;
+            }
+            
+            #box h3 {
+            	font-size: 14px;
+                color: #00AEEF;
+                background: #EAEAEA;
+                padding: 1px 4px 0 7px;
+                margin: 0;
+                border-left: 14px solid #939393;
+                -moz-border-radius: 15px 0px 0px 0px;
+                border-radius: 15px 0px 0px 0px;
+            }
+            
+            #box a:link {
+                text-decoration: underline;
+                color: #000;
+            }
+            
+            #box a:hover {
+                text-decoration: underline;
+                color: #00AEEF;
+            }
+
+/* Student Styling */
+            div#left1 {
+                background-color: #FFF;
+                display: inline;
+                float: left;
+                width: 325px;
+                margin: 0px;
+                padding: 0px;
+            }
+            
+            div#right1 {
+                background-color: #FFF;
+                width: 605px;
+                display: inline;
+                float: right;
+                margin: 0px;
+                padding: 0px;
+            }
+            
+            #right1 h1 {
+                color: #000;
+                border-bottom: solid 2px #000;
+            }
+            
+            #right1 h2 {
+                color: #000;
+                border-bottom: solid 2px #000;
+            }
+            
+            #right1 a:link {
+                text-decoration: underline;
+            }
+            
+            #right1 a:hover {
+                text-decoration: underline;
+                color: #00AEEF;
+            }
+            
+            #box1 {
+                margin: 0;
+                padding: 0;
+                width: 325px;
+                list-style: none;
+            }
+            
+            #box1 li {
+                background: url("../images/box.gif") 0 100% repeat-x repeat-y;
+                padding: 0 0 5px 0;
+                margin: 8px 0 0 0;
+                display: block;
+            }
+                
+            #box1 li p {
+                background: #EAEAEA;
+                padding: 10px 4px 0 7px;
+                margin: 0;
+                border-left: 14px solid #939393;
+                vertical-align: middle;
+                -moz-border-radius: 0px 0px 0px 15px;
+                border-radius: 0px 0px 0px 15px;
+            }
+            
+            #box1 h3 {
+            	font-size: 14px;
+                color: #00AEEF;
+                background: #EAEAEA;
+                padding: 1px 4px 0 7px;
+                margin: 0;
+                border-left: 14px solid #939393;
+                -moz-border-radius: 15px 0px 0px 0px;
+                border-radius: 15px 0px 0px 0px;
+            }
+            
+            #box1 a:link {
+                text-decoration: none;
+                color: #000;
+            }
+            
+            #box1 a:hover {
+                text-decoration: underline;
+                color: #00AEEF;
+            }
+            
+/* Contact Us Styling */
+            div#left2 {
+                background-color: #FFF;
+                display: inline;
+                float: left;
+                width: 300px;
+                margin: 0px;
+                padding: 0 10px 0 0;
+            }
+            
+            div#right2 {
+                background-color: #FFF;
+                width: 630px;
+                display: inline;
+                float: right;
+                margin: 0px;
+                padding: 0px;
+                text-align: justify;
+            }
+            
+            #right2 ul {
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
+            
+            #right2 h1 {
+                color: #000;
+                border-bottom: solid 2px #000;
+            }
+
+            #right2 h2 {
+                color: #000;
+                border-bottom: solid 2px #000;
+            }
+            
+            #right2 a:link {
+                text-decoration: underline;
+            }
+            
+            #right2 a:hover {
+                text-decoration: underline;
+                color: #00AEEF;
+            }
+            
+            #box2 {
+                margin: 0;
+                padding: 0;
+                width: 300px;
+                list-style: none;
+            }
+            
+            #box2 li {
+                background: url("../images/box.gif") 0 100% repeat-x repeat-y;
+                padding: 0 0 5px 0;
+                margin: 8px 0 0 0;
+                display: block;
+            }
+                
+            #box2 li p {
+                background: #EAEAEA;
+                padding: 10px 4px 0 7px;
+                margin: 0;
+                border-left: 14px solid #939393;
+                vertical-align: middle;
+                -moz-border-radius: 0px 0px 0px 15px;
+                border-radius: 0px 0px 0px 15px;
+            }
+            
+            #box2 h3 {
+            	font-size: 14px;
+                color: #00AEEF;
+                background: #EAEAEA;
+                padding: 1px 4px 0 7px;
+                margin: 0;
+                border-left: 14px solid #939393;
+                -moz-border-radius: 15px 0px 0px 0px;
+                border-radius: 15px 0px 0px 0px;
+            }
+            
+            #box2 a:link {
+                text-decoration: none;
+                color: #000;
+            }
+            
+            #box2 a:hover {
+                text-decoration: underline;
+                color: #00AEEF;
+            }
+            
+/* Footer */
+div#footer {
+    /* For WebKit (Safari, Google Chrome etc) */
+    background: -webkit-gradient(linear, left top, left bottom, from(#00AEEF), to(#FFFFFF));
+    /* For Mozilla/Gecko (Firefox etc) */
+    background: -moz-linear-gradient(top, #00AEEF, #FFFFFF);
+    /* For Internet Explorer 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#00AEEF, endColorstr=#FFFFFFFF);
+    /* For Internet Explorer 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00AEEF, endColorstr=#FFFFFFFF)";
+    width: 960px;
+    overflow: hidden;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: #000;
+    font-size: 12px;
+}
+
+#footer img {
+    vertical-align: middle;
+}
+
+#footer a:link, a:visited {
+    font-family: Arial;
+    font-size: 12px;
+    text-decoration: none;
+    color: #000;
+}
+
+#footer a:hover {
+    text-decoration: underline;
+}

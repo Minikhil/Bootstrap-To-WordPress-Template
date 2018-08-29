@@ -1,0 +1,79 @@
+h2, h5
+{
+	font-weight: normal; /* Because it doesn't support inherit. */
+}
+
+/* Most browsers get nicer navigation laid out using display: table-cell. IE doesn't support CSS tables, so it gets floats instead. Less pretty but equally functional. */
+
+.table_layout_wrapper
+{
+	display: block;
+}
+
+#categories
+{
+	clear: both;
+	float: left;
+	display: block;
+	width: 100%;
+	background: #69f;
+}
+
+#categories li
+{
+	float: left;
+	display: block;
+	width: 19.9%; /* IE screws up 20% */
+	padding: .2em 0; /* 2px with default settings */
+}
+
+#subcategories
+{
+	clear: left;
+	float: left;
+	display: block;
+	width: 100%;
+	background: #47d;
+}
+
+#subcategories li
+{
+	float: left;
+	display: block;
+	width: 24.9%; /* IE screws up 25% */
+}
+
+.contact .city, .contact .state
+{
+	margin-right: .3em; /* Because it doesn't support generated content. Value is not precise. */
+}
+
+dl.contact
+{
+	height: 1%; /* Triggers hasLayout, leveraging the IE auto-clearing bug to fix the lack of :after support. */
+}
+
+dl.contact dd
+{
+	width: 17.5em; /* Needed to force them to appear at the proper vertical position. Still don't know why they didn't in the first place. Value is not precise. */
+	padding-right: 1em;
+}
+
+/* IE 6 and below choke on multiple classes per element. This fixes stuff that IE6 should not have done. */
+* html li.n2
+{
+	border-top: none;
+}
+
+/* IE 6 doesn't seem to like percentage widths here. */
+* html #footer
+{
+	padding-left: 10.363636em; /* 20% of 57 10-point ems in 11 point ems */
+}
+
+/* I think this bug is float-related, but I don't want to use a clearing div just for IE 6. */
+* html #footer .divisions
+{
+	height: 1em;
+	overflow: visible; /* The layout may break on narrow-screen devices or at extreme zooms, but it will be usable */
+}

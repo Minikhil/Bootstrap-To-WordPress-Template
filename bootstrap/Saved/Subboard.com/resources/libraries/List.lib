@@ -1,0 +1,266 @@
+import "Iterator"
+
+public function [_join] (arr, delim)
+	[_join] = join(arr, delim)
+end function
+
+class ListModule
+	public default property get construct
+		set construct = [new]
+	end property
+	
+	public function [new]
+'		Creates a new, empty List.
+		
+		set [new] = (new ListClass).init
+	end function
+	
+	public function wrap (arr)
+'		If arr is a List, returns arr. If arr is an array, returns a new List
+'		wrapping arr (by reference). Otherwise, returns a new List containing
+'		only arr.
+		
+		if isArray(arr) then
+			set wrap = (new ListClass).init_with_array(arr)
+		elseif typename(arr) = "ListClass" then
+			set wrap = arr
+		else
+			set wrap = (new ListClass).init_with_array(Array(arr))
+		end if
+	end function
+	
+	public function MIN_ARRAY_SIZE
+		MIN_ARRAY_SIZE = 10
+	end function
+	
+	public function MAX_HEAD_ROOM
+		MAX_HEAD_ROOM = 2.25
+	end function
+	
+	public function GRANTED_HEAD_ROOM
+		GRANTED_HEAD_ROOM = 1.5
+	end function
+end class
+dim List: set List = new ListModule
+
+class ListClass
+'	desc
+
+	private size_
+'		Number of items in the List. This is not the actual size of data_.
+	
+	private data_
+'		Array containing list items.
+	
+	public function init
+'		Initializes an empty List.
+		
+		size_ = 0
+		data_ = Array()
+		resize_array List.MIN_ARRAY_SIZE
+		
+		set init = me
+	end function
+	
+	public function init_with_array (arr)
+'		Initializes a List with a copy of the given array.
+		
+		size_ = uBound(arr) + 1
+		data_ = arr
+		
+		set init_with_array = me
+	end function
+	
+	public property get size
+'		Returns the number of elements in the List.
+		
+		size = size_
+	end ProPerty
+	
+	public function to_array
+'		Returns an array containing the elements of the List. The returned array
+'		is a new copy, so modifying the List will not modify the array. As a
+'		side effect, this method will compact the data array.
+		
+		resize_array size_
+		to_array = data_
+	end function
+	
+	public default property get data (index)
+'		Returns the index-th element of the List.
+		
+		if index_is_valid(index) then
+			assign data, data_(index)
+		end if
+	end property
+	
+	public property let data (index, value)
+'		Sets the index-th value of the List to the given value. For scalars.
+		
+		if index_is_valid(index) then
+			data_(index) = value
+		end if
+	end property
+	
+	public property set data (index, value)
+'		Sets the index-th value of the List to the given value. For objects.
+		
+		if index_is_valid(index) then
+			set data_(index) = value
+		end if
+	end property
+	
+	public function iterator
+'		Returns an iterator for the List. See Iterator.lib for more information.
+		
+		set iterator = global("Iterator").for_array(me)
+	end function
+	
+	public function add(datum)
+'		Adds the given datum to the end of List. If the data array is not large
+'		enough to contain another element, it will be expanded.
+		size_ = size_ + 1
+		if (size_ > uBound(data_) + 1) then expand_array
+		
+		assign data_(size_ - 1), datum
+		assign add, datum
+	end function
+	
+	public function add_all(collection)
+'		Adds all values from the given collection to the List. Resizes the
+'		data array once if necessary.
+		
+		dim new_size: new_size = size_ + global("Iterator").size(collection)
+		
+		if new_size > uBound(data_) + 1 then
+			if new_size > (uBound(data_) + 1) * List.GRANTED_HEAD_ROOM then
+				resize_array new_size
+			else
+				expand_array
+			end if
+		end if
+		
+		with global("Iterator")(collection)
+			do while .has_current
+				assign data_(size_), .value
+				
+				.move_next
+				size_ = size_ + 1
+			loop
+		end with
+	end function
+	
+	public function remove(index)
+'		Removes the item at the specified index and moves the remainder of the
+'		list items back.
+		
+		assign remove, data_(index)
+		
+		size_ = size_ - 1
+		dim i
+		for i = index to (size_ - 1)
+			data_(i) = data_(i + 1)
+		next
+		
+		if (max(size_ * List.MAX_HEAD_ROOM, 10) < uBound(data_) + 1) then shrink_array
+	end function
+	
+	private function resize_array (array_size)
+'		Resizes the data array to fit the given number of elements, preserving
+'		the existing data.
+		
+		redim preserve data_(array_size - 1)
+	end function
+	
+	private function expand_array
+'		Expands the data array by a factor of GRANTED_HEAD_ROOM.
+		
+		resize_array Float((uBound(data_) + 1) * List.GRANTED_HEAD_ROOM).ceil
+	end function
+	
+	private function shrink_array
+'		Shrinks the data array to fit the contents with some space to spare, to
+'		a minimum of MIN_ARRAY_SIZE.
+		
+		resize_array max(Float(size_ * List.GRANTED_HEAD_ROOM).ceil, List.MIN_ARRAY_SIZE)
+	end function
+	
+	private function index_is_valid(index)
+'		Tests whether the given index is valid for this List. If it is not, an
+'		error is raised, so use with caution.
+		
+		if ((cLng(index) <> index) or (index < 0) or (index >= size)) then
+			index_is_valid = false
+			Err.raise 8
+			Err.description = "Invalid list index."
+			Err.source = "List class"
+		else
+			index_is_valid = true
+		end if
+	end function
+	
+	public function immutable
+'		Returns an immutable copy of the List. The new List will be compacted.
+		
+		set immutable = (new ImmutableListClass).init_with_array(to_array)
+	end function
+	
+	public function join
+		join = [_join](to_array, VBNullString)
+	end function
+	
+	public function join_with (delim)
+		join_with = [_join](to_array, delim)
+	end function
+end class
+
+class ImmutableListClass
+	private data_
+	
+	public function init_with_array (arr)
+		data_ = arr
+		
+		set init_with_array = me
+	end function
+	
+	public property get size
+		size = uBound(data_) + 1
+	end ProPerty
+	
+	public function to_array
+		to_array = data_
+	end function
+	
+	public default property get data (index)
+		if index_is_valid(index) then
+			assign data, data_(index)
+		end if
+	end property
+	
+	public function iterator
+		set iterator = global("Iterator").for_array(data_)
+	end function
+	
+	private function index_is_valid(index)
+		if ((cLng(index) <> index) or (index < 0) or (index >= size)) then
+			index_is_valid = false
+			Err.raise 8
+			Err.description = "Invalid list index."
+			Err.source = "List class"
+		else
+			index_is_valid = true
+		end if
+	end function
+	
+	public function immutable
+		set immutable = me
+	end function
+	
+	public function join
+		join = [_join](to_array, VBNullString)
+	end function
+	
+	public function join_with (delim)
+		join_with = [_join](to_array, delim)
+	end function
+end class

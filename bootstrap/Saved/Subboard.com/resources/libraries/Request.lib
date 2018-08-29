@@ -1,0 +1,220 @@
+import "List"
+
+dim [_Request_Original]: set [_Request_Original] = Request
+
+class HTTPHeaderMapClass
+	private keys_
+	
+	public default property get item (key)
+		item = [_Request_Original].ServerVariables.item("HEADER_" & key)
+	end property
+	
+	public function keys
+		if isEmpty(keys_) then
+			set keys_ = List.new
+			dim k: for each k in [_Request_Original].ServerVariables
+				if left(k, 5) = "HTTP_" then
+					keys_.add replace(right(k, len(k) - 5), "_", "-")
+				end if
+			next
+		end if
+		
+		set keys = keys_
+	end function
+	
+	public function items
+		items = dictionary_.items
+	end function
+	
+	public function exists (key)
+		exists = dictionary_.exists(key)
+	end function
+	
+	public function iterator
+		set iterator = global("Iterator").for_map(me)
+	end function
+end class
+
+class RequestSingleton
+	private headers_
+	private post_data_
+	private files_
+	
+	private function old_var (name)
+		old_var =  [_Request_Original].ServerVariables.item(name)
+	end function
+	
+	private sub class_initialize
+		set headers_ = new HTTPHeaderMapClass
+		set files_ = Map.new
+		
+		if method = "POST" then
+			dim content_type: content_type = header("CONTENT-TYPE")
+			
+			if instr(content_type, "multipart/form-data") = 1 then
+				set post_data_ = (new FormMultipartDataClass).value
+			else
+				set post_data_ = [_Request_Original].Form
+			end if
+		else
+			set post_data_ = Map.new.immutable
+		end if
+	end sub
+	
+	public property get headers
+		set headers = headers_
+	end property
+	
+	public property get header (name)
+		header = headers_.item(name)
+	end property
+	
+	public property get url     : url     = old_var("URL")             : end property
+	public property get version : version = old_var("SERVER_PROTOCOL") : end property
+	public property get method  : method  = old_var("REQUEST_METHOD")  : end property
+	
+	public property get post    : set post = post_data_  : end property
+end class
+shadow_global "Request", new RequestSingleton
+
+class FormMultipartDataClass
+	private post_data_
+	private content_disposition_re_
+	private content_type_re_
+	
+	public property get value
+		set value = post_data_
+	end property
+	
+	private sub class_initialize
+		set post_data_ = Map.new
+		
+		dim re_str: re_str = "Content-Disposition: form-data ; name=""([^""]*)"" (?:; filename=""([^""]*)"")?"
+		set content_disposition_re_ = Regex.new(replace(re_str, " ", "\s*"))
+		
+		dim content_type_re_str: content_type_re_str = "Content-Type:\s*(.*)"
+		set content_type_re_ = Regex.new(content_type_re_str)
+		
+		parse_request
+	end sub
+	
+	private function bin2str (bin)
+		if isNull(bin) then
+			bin2str = null
+			exit function
+		end if
+		
+		dim s: set s = Str.empty
+		
+		dim i, l
+		l = lenB(bin)
+		for i = 1 to l
+			s.add chr(ascB(midB(bin, i, 1)))
+		next
+		
+		bin2str = s
+	end function
+	
+	private function str2bin (s)
+		if isNull(str) then
+			str2bin = null
+			exit function
+		end if
+		
+		str2bin = vbNullString
+		
+		dim i, l
+		l = len(s)
+		for i = 1 to l
+			str2bin = str2bin & chrB(ascB(mid(s, i, 1)))
+		next
+	end function
+	
+'	Warning: this function modifies its first parameter!
+	private function seek (byref i, str, target)
+		dim j: j = inStr(i, str, target)
+		
+		if isNull(j) or j = 0 then
+			seek = null
+		else
+			seek = mid(str, i, j - i)
+			i = j + len(target)
+		end if
+	end function
+	
+	private function parse_request
+		dim data    : data = bin2str(Request.binaryRead(Request.totalBytes))
+		dim itr     : set itr = Iterator(data)
+		
+		dim i       : i = 1
+		dim boundary
+		
+		boundary = seek(i, data, vbCRLF)
+		boundary =  itr.seek_after(vbCRLF)
+		if isNull(boundary) then exit function
+		
+		dim current
+		do
+			'if mid(data, i, 2) = "--" then exit function
+			if itr.values(2) ="--" then exit function
+			
+			current = seek(i, data, boundary)
+			current = itr.seek_after(boundary)
+			if isNull(current) then exit function
+			parse_section(current)
+		loop
+	end function
+	
+	private function parse_section (section)
+		dim meta, body
+		dim matches, parts, name, filename, content_type
+		dim file
+		dim i: i = 1
+		
+		meta = seek(i, section, vbCRLF & vbCRLF)
+		body = mid(section, i)
+		
+		if isNull(meta) then exit function
+		set matches = content_disposition_re_.find(meta)
+		if isNull(matches) then exit function
+		name     = matches.subMatches(0)
+		filename = matches.subMatches(1)
+		if name = Empty then exit function
+		
+		if filename = Empty then
+			post_data_.add name, body
+		else
+			content_type = content_type_re_.find(meta).subMatches(0)
+			set file = (new FileDataClass).init(filename, content_type, body)
+			post_data_.add name, file
+		end if
+	end function
+end class
+
+class FileDataClass
+	private filename_
+	private content_type_
+	private data_
+	
+	public function init(filename, content_type, data)
+		filename_ = filename
+		content_type_ = content_type
+		data_ = data
+		
+		set init = me
+	end function
+	
+	public property get filename: filename = filename_: end property
+	public property let filename (val): filename_ = val: end property
+	
+	public property get content_type: content_type = content_type_: end property
+	
+	public property get data: data = data_: end property
+	
+	public property get length: length = lenB(data_): end property
+	
+	public function save (path)
+		dim f: set f = FileSystem.open_write(path, "cx")
+		f.write data_
+	end function
+end class

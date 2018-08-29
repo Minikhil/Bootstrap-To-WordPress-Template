@@ -1,0 +1,51 @@
+' These constants are used as arguments to some built-in functions, notably FormatNumber.
+const TristateUseDefault = -2
+const TristateTrue       = -1
+const TristateFalse      =  0
+
+function Tristate (bool)
+'	Converts an optional boolean value to a VBScript tristate value, as follows:
+'		Empty           => TristateUseDefault
+'		Any true value  => TristateTrue
+'		Any other value => TristateFalse
+	
+    if isEmpty(bool) then
+        Tristate = TristateUseDefault
+    elseif bool then
+        Tristate = TristateTrue
+    else
+        Tristate = TristateFalse
+    end if
+end function
+
+class BoolClass
+	private value_
+	
+	public function init (val)
+		value_ = val
+		set init = me
+	end function
+	
+	public default property get value
+		value = value_
+	end property
+	
+	public property let value (val)
+		value_ = val
+	end property
+	
+	public function marshall
+		marshall = value_
+	end function
+end class
+
+class BoolModule
+	public default property get construct (val)
+		set construct = (new FloatClass).init(val)
+	end property
+	
+	public function unmarshall (data)
+		set unmarshall = construct(data)
+	end function
+end class
+dim Bool: set Bool = new BoolModule

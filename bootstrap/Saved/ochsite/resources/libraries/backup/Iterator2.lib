@@ -1,0 +1,112 @@
+
+class IteratorModule
+	function for_array (arr)
+		set for_array = (new ArrayIterator).init(arr)
+	end function
+	
+	function for_map (map)
+		set for_map = (new MapIterator).init(map)
+	end function
+	
+	function for_string (str)
+		set for_string = (new StringIterator).init(str)
+	end function
+end class
+dim Iterator: set Iterator = new IteratorModule
+'
+'class ArrayIteratorClass
+'	private arr_
+'	private i_
+'	private len_
+'	
+'	public function init (arr)
+'		arr_ = arr
+'		i_ = 0
+'		len_ = ubound(arr_)
+'	end function
+'	
+'	public function reset
+'		i_ = 0
+'	end function
+'	
+'	public function has_current
+'		has_current = i_ < len_
+'	end function
+'	
+'	public function move_next
+'		i_ = i_ + 1
+'	end function
+'	
+'	public function key
+'		key = i_
+'	end function
+'	
+'	public function value
+'		assign value, arr_(i_)
+'	end function
+'	
+'	public function pop
+'		assign pop, arr(i_)
+'		i_ = i_ + 1
+'	end function
+'end class
+'
+'class MapIteratorClass
+'	private map_
+'	private keys_itr_
+'	
+'	public function init (map)
+'		set map_ = map
+'		set keys_itr_ = Iterator.for_array(map_.keys)
+'	end function
+'	
+'	public function reset
+'		keys_itr_.reset
+'	end function
+'	
+'	public function has_current
+'		has_current = keys_itr_.has_current
+'	end function
+'	
+'	public function move_next
+'		keys_itr_.move_next
+'	end function
+'	
+'	public function key
+'		assign key, keys_itr_.value
+'	end function
+'	
+'	public function value
+'		assign value, map_.item(keys_itr_.value)
+'	end function
+'end class
+'
+'class StringIteratorClass
+'	private str_
+'	private i_
+'	
+'	public function init (str)
+'		str_ = str
+'		i_ = 1
+'	end function
+'	
+'	public function reset
+'		i_ = 1
+'	end function
+'	
+'	public function has_current
+'		has_current = (i_ <= len(str_))
+'	end function
+'	
+'	public function move_next
+'		i_ = i_ + 1
+'	end function
+'	
+'	public function key
+'		key = i_
+'	end function
+'	
+'	public function value
+'		value = mid(str_, i_, 1)
+'	end function
+'end class

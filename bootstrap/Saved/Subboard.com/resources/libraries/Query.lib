@@ -1,0 +1,94 @@
+class QueryModule
+	public function [new] ()
+		set [new] = (new QueryClass).init()
+	end function
+	
+	public function [select] (fields, from)
+		set [select] = (new SelectQueryClass).init(fields, from)
+	end function
+end class
+dim Query: set Query = new QueryModule
+
+
+class SelectQueryClass
+	private fields_
+	private table_
+	private order_by_
+	private group_by_
+	private conditions_
+	private params_
+	
+	public function init (fields, from)
+		set fields_ = List.new
+		set conditions_ = List.new
+		set params_ = List.new
+		
+		fields_.add fields
+		table_ = from
+		
+		set init = me
+	end function
+	
+	public function [select] (fields)
+		fields_.add fields
+	end function
+	
+	public function from (table)
+		table_ = table
+		
+		set from = me
+	end function
+	
+	public function order_by (field)
+		order_by_ = Database.escape(field)
+		
+		set order_by = me
+	end function
+	
+	public function group_by (field)
+		group_by_ = Database.escape(field)
+		
+		set group_by = me
+	end function
+	
+	public function where (cond, param)
+		conditions_.add cond
+		if exists(param) then
+			params_.add param
+		end if
+		
+		set where = me
+	end function
+	
+	public function to_string
+		with Str.empty
+			.add "select "
+			.add join(fields_.to_array, ", ")
+			
+			.add " from "
+			.add table_
+			
+			if conditions_.size > 0 then
+				.add " where "
+				.add join(conditions_.to_array, " and ")
+			end if
+			
+			if exists(group_by_) then
+				.add " group by "
+				.add group_by_
+			end if
+			
+			if exists(order_by_) then
+				.add " order by "
+				.add order_by_
+			end if
+			
+			.add ";"
+			to_string = .value
+		end with
+	end function
+	
+	public function args
+		args = iif(params_.size > 0, params_.to_array, null)
+	end function
+end class

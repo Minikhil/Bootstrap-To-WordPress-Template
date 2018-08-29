@@ -1,0 +1,31 @@
+class DictionaryMap
+	private dictionary_
+	
+	public sub init (dictionary)
+		set dictionary_ = dictionary
+	end sub
+	
+	public default property get value (key)
+		if isObject(dictionary_(key)) then
+			set value = dictionary_(key)
+		else
+			value = dictionary_(key)
+		end if
+	end property
+	
+	public property get keys
+		set keys = Iterator.array(dictionary_.keys)
+	end class
+	
+	
+end class
+
+class FunctionMap
+	private keys_
+	private mapper_
+end class
+
+class MapsModule
+
+end class MapsModule
+dim Maps: set Maps = new MapsModule

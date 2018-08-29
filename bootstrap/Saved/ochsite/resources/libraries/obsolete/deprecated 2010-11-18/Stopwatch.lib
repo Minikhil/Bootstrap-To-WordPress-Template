@@ -1,0 +1,33 @@
+class Stopwatch
+	private result_
+	
+	public default property get result
+		result = result_
+	end property
+	
+	public function time
+		set time = new Stopwatch_Measurement
+		time.init me
+	end function
+	
+	public function start
+		result_ = timer
+	end function
+	
+	public function finish
+		result_ = timer - result_
+	end function
+end class
+
+class Stopwatch_Measurement
+	private watch_
+	
+	public sub init (watch)
+		set watch_ = watch
+		watch_.start
+	end sub
+	
+	private sub class_terminate
+		watch_.finish
+	end sub
+end class

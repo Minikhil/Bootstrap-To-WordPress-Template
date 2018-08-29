@@ -1,0 +1,54 @@
+'Date
+'+	ymd(year, month, day)
+'+	ywd(weekyear, week, weekday)
+'+	yd(year, yearday)
+'+	iso(string)
+'
+'-	
+'
+'
+' ASSUMPTIONS:
+' -	Standard Western calendars
+' - Day begins at midnight
+
+class DateClass
+	private days_
+	
+	public function init (days)
+		days_ = days
+	end function
+end class
+
+class DateModule
+	private calendar_
+	
+	'	
+end class
+dim Date: set Date = new DateModule
+
+class ISOCalendarSingleton
+	public function year
+		
+	end function
+end class
+dim ISOCalendar: set ISOCalendar = new ISOCalendarSingleton
+
+class TimeClass
+	private msecs_
+	
+	private function hour
+		hour = msecs_ \ 3600000 mod 24
+	end function
+	
+	private function minute
+		minute = (msecs_ \ 60000) mod 60
+	end function
+	
+	private function second
+		second = (msecs_ \ 1000) mod 60
+	end function
+	
+	private function msec
+		msec = msecs_ mod 1000
+	end function
+end class

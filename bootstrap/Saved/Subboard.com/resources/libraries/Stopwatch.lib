@@ -1,0 +1,41 @@
+class StopwatchModule
+	public function [new]
+		set [new] = (new StopwatchClass)
+	end function
+end class
+dim Stopwatch: set Stopwatch = new StopwatchModule
+
+class StopwatchClass
+	private result_
+	
+	public default property get result
+		result = result_
+	end property
+	
+	public function time
+		set time = (new StopwatchMeasurementEphemeron).init(me)
+	end function
+	
+	public function start
+		result_ = timer
+	end function
+	
+	public function finish
+		result_ = timer - result_
+	end function
+end class
+
+class StopwatchMeasurementEphemeron
+	private watch_
+	
+	public function init (watch)
+		set watch_ = watch
+		watch_.start
+		
+		set init = me
+	end function
+	
+	private sub class_terminate
+		watch_.finish
+	end sub
+end class

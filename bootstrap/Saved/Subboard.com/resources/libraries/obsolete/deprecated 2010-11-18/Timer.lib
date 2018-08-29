@@ -1,0 +1,29 @@
+class TimerClass
+	private value_
+	private t_
+	
+	private sub class_initialize
+		t_ = 0
+	end sub
+	
+	public property get value
+		value = value_
+	end property
+	
+	public function start
+		t_ = timer 
+	end function
+	
+	public function record
+		value_ = value_ + timer - t_
+		t_ = 0
+	end function
+end class
+
+class TimerModule
+	public function timer
+		set timer = new TimerClass
+	end function
+end class
+
+dim Timer: set Timer = new TimerModule

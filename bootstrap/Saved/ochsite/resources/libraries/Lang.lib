@@ -1,0 +1,120 @@
+<%
+	dim LF: LF = VBLF
+'	A faux-constant containing a line feed. Deprecated for future use due to
+'	obvious redundancy. Don't use this.
+	
+	function assign (byref lvalue, rvalue)
+'		Assigns the value of rvalue to the variable lvalue. Since lvalue is
+'		passed by reference, the assignment will affect the lvalue argument in
+'		the calling context. The assignment will succeed whether rvalue is a
+'		primitive or an object. This circumvents the need to test whether an
+'		unknown value is an object before assigning it to a variable. lvalue
+'		must be a variable, not a constant or expression. Returns Empty.
+'		
+'		Example:
+'			dim foo
+'			assign foo, 42               => foo is 42
+'			assign foo, List.construct() => foo is List object
+		
+		if isObject(rvalue) then
+			set lvalue = rvalue
+		else
+			lvalue = rvalue
+		end if
+	end function
+	
+'==============================================================================
+	
+	function exists (var)
+'		Returns a false value if var is nothing, null, or empty, and a true
+'		value otherwise. Useful for testing the existence of a value which may
+'		or may not be an object.
+		
+		if isObject(var) then
+			exists = not (var is nothing)
+		else
+			exists = not (isNull(var) or isEmpty(var))
+		end if
+	end function
+	
+	function global (name)
+'		Evaluates the string argument and returns the value. The evaluation
+'		happens in this functions scope, which is very near to true global.
+		
+		assign global, eval(name)
+	end function
+	
+	function iif (predicate, truepart, falsepart)
+'		Returns truepart if predicate is true, or falsepart otherwise. Note
+'		that evaluation is not short-circuited.
+		
+		if predicate = true then
+			assign iif, truepart
+		else
+			assign iif, falsepart
+		end if
+	end function
+	
+	function iff (predicate, truepart)
+'		Returns truepart is predicate is true. Otherwise, returns Nothing if
+'		truepart is an object or Empty otherwise.
+		
+		if predicate = true then
+			assign iff, truepart
+		else
+			if isObject(truepart) then
+				set iff = nothing
+			else
+				iff = empty
+			end if
+		end if
+	end function
+	
+	function coalesce (term, alternative)
+'		Returns term if it is not Nothing, Null, or Empty. Otherwise, returns
+'		alternative.
+'		
+'		Example:
+'			function print_optional (argument)
+'				print coalesce(argument, "This space intentionally left blank")
+'			end function
+'			
+'			print_optional("Hello") => "Hello"
+'			print_optional(null)    => "This space intentionally left blank"
+		
+		if exists(term) then
+			assign coalesce, term
+		else
+			assign coalesce, alternative
+		end if
+	end function
+	
+	function assert (expression, message)
+'		Tests if expression is true. If not, raises an error including the
+'		given message.
+		
+		if not expression then
+			Err.Raise vbObjectError + 1729, vbNullString, "Assertion Failure: " & message ' Arbitrary numeric constant
+		end if
+	end function
+	
+	function assert_type (expression, tipe)
+		if instr(typename(expression), tipe) = 0 then
+			Err.Raise vbObjectError + 1729, vbNullString, "Type Error: expected " & tipe & " but found " & typename(expression) & "."
+		end if
+	end function
+	
+	function size (collection)
+'		Returns the size of collection. If collection is an Array or String,
+'		it uses the appropriate builtin; otherwise, it simply calls the
+'		collection's own size function.
+		
+		if isArray(collection) then
+			size = uBound(collection) + 1
+		elseif typename(collection) = "String" then
+			size = len(collection)
+		elseif isObject(collection) then
+			size = collection.size
+		end if
+	end function
+%>

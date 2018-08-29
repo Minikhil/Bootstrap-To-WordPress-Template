@@ -1,0 +1,566 @@
+import "Map"
+import "HTMLBuilder"
+
+class FormModule
+	public function [new] (name)
+		set [new] = new FormClass
+	end function
+end class
+dim Form: set Form = new FormModule
+
+'-----------------------------------------------------------------------------
+
+class FormDataClass
+'	A dumb struct-like class holding data for a form. Accessed only through
+'	facades, including FormClass, FormDefinitionEphemeron, and
+'	FormPrinterEphemeron.
+	
+	public source
+	private attrs_
+	private fields_
+	
+	public property get attrs:  set attrs = attrs_:   end property
+	public property get fields: set fields = fields_: end property
+	
+	public function init (name)
+		set source = (new FormDefaultDataSource).init(me)
+		set attrs_ = Map.new
+		set fields_ = Map.new
+		attrs_.add "name", name
+		attrs_.add "action", Request.ServerVariables("URL")
+		
+		set init = me
+	end function
+end class
+
+class FormDefaultDataSource
+'	A Map-like object that will fetch request data from either the URL query
+'	or request body, depending on the HTTP request.
+	
+	private form_
+	
+	public function init (form)
+		set form_ = form
+		
+		set init = me
+	end function
+	
+	public default property get item (key)
+		if form_.attrs.item("method") = "get" then
+			item = Request.QueryString(key)
+		else
+			item = Request.Form(key)
+		end if
+	end property
+end class
+
+class FormClass
+'	The general "handle" of a form. Can be defined or printed or its values
+'	accessed.
+	
+	private data_
+	
+	public default property get item(name)
+		item = data_.fields.item(name).value
+	end property
+	
+	public function has (name)
+		has = (item(name) <> vbNullString)
+	end function
+	
+	public function define (name)
+		set data_ = (new FormDataClass).init(name)
+		set define = (new FormDefinitionEphemeron).init(data_)
+	end function
+	
+	public function print
+		set print = (new FormPrinterEphemeron).init(data_)
+	end function
+end class
+
+class FormDefinitionEphemeron
+'	The facade for defining a form, including adding fields. Provides
+'	accessors for several form properties.
+	
+	private data_
+	
+	public function init (data)
+		set data_ = data
+		
+		set init = me
+	end function
+	
+	public property get attr (name):      attr = data_.attrs.item(name): end property
+	public property let attr (name, val): data_.attrs.item(name) = val:  end property
+	
+	public property let action (val): attr("action") = val: end property
+	
+	public property set source (val): set data_.source_ = val: end property
+	
+	public property let method (val)
+		val = lcase(val)
+		if (val = "get" or val = "post") then
+			attr("method") = val
+		else 'may handle other HTTP methods later.
+			assert false, "Invalid parameter to 'let method': """ & val & """ is not a supported HTTP method."
+		end if
+	end property
+	
+	' Field declarations ---------------------------------------------------
+	
+	private function field (name)
+		set field = new FieldDataClass
+		
+		field.actual_value = data_.source.item(name)
+		
+		field.name = name
+		field.id = data_.attrs.item("name") & "-" & name
+		
+		field.label = Str(name).humanize
+		
+		data_.fields.add name, field
+	end function
+	
+	public function text (name)
+		dim f: set f = field(name)
+		
+		f.set_control InputControl
+		
+		'set text = (new FieldDefinitionEphemeron).init(f)
+		set text = f
+	end function
+	
+	'public function [boolean] (name)
+	'	dim f: set f = field(name)
+	'	
+	'	set f.control_type = InputControl
+	'	
+	'	f.attrs.add "type", "checkbox"
+	'	
+	'	set [boolean] = (new FieldDefinitionEphemeron).init(f)
+	'end function
+	'
+	public function select_one (name)
+		dim f: set f = field(name)
+		
+		f.set_control(SelectControl)
+		
+		set select_one = f
+	end function
+end class
+
+class FormPrinterEphemeron
+	private form_
+	private html_
+	
+	public function init (form)
+		set form_ = form
+		set html_ = (new HTMLOutputStreamClass).init(Output)
+		
+		html_.open_tag "form", form_.attrs
+		
+		set init = me
+	end function
+	
+	private sub class_terminate
+		html_.close_tag "form"
+	end sub
+	
+	public function field (name)
+		set field = (new FieldPrinterEphemeron).init(form_.fields.item(name), html_)
+	end function
+	
+	public function fields (names)
+		with Iterator(names)
+			do while .has_current
+				field(.value)
+				.move_next
+			loop
+		end with
+	end function
+	
+	public function submit (label)
+'		Creates a "free" submit button not corresponding to a form field.
+		
+		with html_.tag("div", Array("class", "field submit"))
+			html_.empty_tag "input", Array("type", "submit", "value", label)
+		end with
+	end function
+end class
+
+'-----------------------------------------------------------------------------
+
+class FieldDataClass
+	public name
+	public id
+	public label
+	
+	public actual_value
+	public default_value
+	
+	private control_
+	private attrs_
+	private options_
+	
+	private sub class_initialize
+		set attrs_ = Map.new
+		set options_ = new FieldOptionsListClass
+	end sub
+	
+	public property get attrs
+		set attrs = attrs_
+	end property
+	
+	public property get control
+		set control = control_
+	end property
+	
+	public property get options 
+		set options = options_
+	end property
+	
+	public function set_control (factory)
+		set control_ = factory.new(me)
+	end function
+	
+	public function [optional]
+		
+	end function
+	
+	public property get value
+		value = iif(actual_value <> vbNullString, actual_value, default_value)
+	end property
+end class
+
+class FieldDefinitionEphemeron
+	private field_
+	
+	public function init(field)
+		set field_ = field
+		
+		set init = me
+	end function
+end class
+
+class FieldPrinterEphemeron
+	private field_
+	private html_
+	
+	public function init (field, html)
+		set field_ = field
+		set html_ = html
+		
+		set init = me
+	end function
+	
+	public property get attr (key)
+		attr = field_.attrs.item(key)
+	end property
+	
+	public property let attr (key, value)
+		field.attrs.item(key) = value
+	end property
+	
+	private sub class_terminate
+		field_.control.print html_
+	end sub
+	
+	' as is reserved for use in VBA.
+	public function [as] (control_type)
+		field_.set_control control_type
+		
+		set [as] = me
+	end function
+end class
+
+'--------------------------------------------------------------- Control Types
+
+class Form__HelpersSingleton
+	public function base_attrs (field)
+		set base_attrs = Map.literal(Array("name", field.name, "id", field.id))
+	end function
+	
+	public function simple_wrapper (field, html)
+		set simple_wrapper = (new SimpleFieldWrapperEphemeron).init(field, html)
+	end function
+	
+	public function compound_wrapper (field, html)
+		set compound_wrapper = (new CompoundFieldWrapperEphemeron).init(field, html)
+	end function
+	
+	public function iterate_options (control, options)
+		with Iterator(options)
+			do while .has_current
+				control.print_option .value.value, .value.label
+				
+				.move_next
+			loop
+		end with
+	end function
+end class
+dim Form__Helpers: set Form__Helpers = new Form__HelpersSingleton
+
+class SimpleFieldWrapperEphemeron
+	private html_
+	
+	public function init (field, html)
+		set html_ = html
+		html_.open_tag "div", Array("class", "field " & field.control.field_class)
+		if exists(field.label) then
+			html_.inline_tag "label", Array("for", field.id), field.label
+		end if
+		set init = me
+	end function
+	
+	public sub class_terminate
+		html_.close_tag "div"
+	end sub
+end class
+
+class CompoundFieldWrapperEphemeron
+	private html_
+	
+	public function init (field, html)
+		set html_ = html
+		html_.open_tag "fieldset", Array("class", "field " & field.control.field_class)
+		if exists(field.label) then
+			html_.inline_tag "legend", null, field.label
+		end if
+		set init = me
+	end function
+	
+	public sub class_terminate
+		html_.close_tag "fieldset"
+	end sub
+end class
+
+class InputControlFactorySingleton
+	public function [new] (field)
+		set [new] = (new InputControlClass).init(field)
+	end function
+end class
+dim InputControl: set InputControl = new InputControlFactorySingleton
+
+class InputControlClass
+	private field_
+	private input_tag_attrs_
+	
+	public function init(field)
+		set field_ = field
+		set input_tag_attrs_ = Form__Helpers.base_attrs(field_)
+		input_tag_attrs_.add "type", "text"
+		if field.value <> vbNullString then
+			input_tag_attrs_.add "value", field_.actual_value
+		end if
+		
+		set init = me
+	end function
+	
+	public function print (html)
+		with Form__Helpers.simple_wrapper(field_, html)
+			html.empty_tag "input", input_tag_attrs_
+		end with
+	end function
+	
+	public function field_class
+		field_class = input_tag_attrs_("type")
+	end function
+end class
+
+
+class HiddenControlFactorySingleton
+	public function [new] (field)
+		set [new] = (new HiddenControlClass).init(field)
+	end function
+end class
+dim HiddenControl: set HiddenControl = new HiddenControlFactorySingleton
+
+class HiddenControlClass
+	private field_
+	private input_tag_attrs_
+	
+	public function init(field)
+		set field_ = field
+		set input_tag_attrs_ = Form__Helpers.base_attrs(field_)
+		input_tag_attrs_.add "type", "hidden"
+		if field.value <> vbNullString then
+			input_tag_attrs_.add "value", field_.actual_value
+		end if
+		
+		set init = me
+	end function
+	
+	public function print (html)
+		with html.tag("div", Array("class", "field hidden"))
+			html.empty_tag "input", input_tag_attrs_
+		end with
+	end function
+	
+	public function field_class
+		field_class = input_tag_attrs_("type")
+	end function
+end class
+
+
+
+
+class SelectControlFactorySingleton
+	public function [new] (field)
+		set [new] = (new SelectControlClass).init(field)
+	end function
+end class
+dim SelectControl: set SelectControl = new SelectControlFactorySingleton
+
+class SelectControlClass
+	private field_
+	private select_tag_attrs_
+	
+	private html_
+	
+	public function init(field)
+		set field_ = field
+		set select_tag_attrs_ = Form__Helpers.base_attrs(field_)
+		
+		set init = me
+	end function
+	
+	public function print (html)
+		set html_ = html ' We need this in an instance variable for the
+		                 ' callbacks to print_option.
+		
+		with Form__Helpers.simple_wrapper(field_, html_)
+			with html.tag("select", select_tag_attrs_)
+				Form__Helpers.iterate_options me, field_.options
+			end with
+		end with
+		
+		set html_ = nothing ' Now get rid of it.
+	end function
+	
+	public function print_option (value, label)
+		dim disabled: disabled = (value = vbNullString and label = vbNullString)
+		html_.inline_tag "option", Array( _
+			"selected", iif(not disabled and value = field_.value, "selected", null), _
+			"value", iif(exists(label), value, null), _
+			"disabled", iif(disabled, "disabled", null) _
+		), coalesce(label, value)
+	end function
+	
+	public function field_class
+		field_class = "select"
+	end function
+end class
+
+class RadiosControlFactorySingleton
+	public function [new] (field)
+		set [new] = (new RadiosControlClass).init(field)
+	end function
+end class
+dim RadiosControl: set RadiosControl = new RadiosControlFactorySingleton
+
+class RadiosControlClass
+	private field_
+	private select_tag_attrs_
+	
+	private html_
+	
+	public function init(field)
+		set field_ = field
+		set select_tag_attrs_ = Form__Helpers.base_attrs(field_)
+		set html_ = nothing
+		
+		set init = me
+	end function
+	
+	public function print (html)
+		set html_ = html ' We need this in an instance variable for the
+		                 ' callbacks to print_option.
+		
+		with Form__Helpers.compound_wrapper(field_, html_)
+			Form__Helpers.iterate_options me, field_.options
+		end with
+		
+		set html_ = nothing ' Now get rid of it.
+	end function
+	
+	public function print_option (value, label)
+		dim id: id = field_.id & "-" & value
+		
+		with html_.tag("div", Array("class", "field radio"))
+			html_.empty_tag "input", Array( _
+				"type", "radio", _
+				"name", field_.name, _
+				"value", value, _
+				"id", id, _
+				"checked", iif(value = field_.value, "true", null) _
+			)
+			html_.inline_tag "label", Array("for", id), coalesce(label, value)
+		end with
+	end function
+	
+	public function field_class
+		field_class = "radios"
+	end function
+end class
+
+class FieldOptionClass
+	public label
+	public value
+	
+	public function init (label_, value_)
+		label = label_
+		value = value_
+		
+		set init = me
+	end function
+end class
+
+class FieldOptionsListClass
+	private options_
+	
+	private sub class_initialize
+		set options_ = List.new
+	end sub
+	
+	public function add (key, value)
+		options_.add ((new FieldOptionClass).init(key, value))
+	end function
+	
+	public function add_all (collection)
+		if instr(typename(collection), "Map") > 0 then
+			add_map collection
+		else
+			add_list collection
+		end if
+	end function
+	
+	public function add_list (list)
+		with global("Iterator")(list)
+			do while .has_current
+				add null, .value
+				.move_next
+			loop
+		end with
+	end function
+	
+	public function add_map (map)
+		with map.iterator
+			do while .has_current
+				add .key, .value
+				.move_next
+			loop
+		end with
+	end function
+	
+	public function add_blank
+		add vbNullString, vbNullString
+	end function
+	
+	public function keys
+		keys = keys_.to_array
+	end function
+	
+	public function iterator
+		set iterator = options_.iterator
+	end function
+end class

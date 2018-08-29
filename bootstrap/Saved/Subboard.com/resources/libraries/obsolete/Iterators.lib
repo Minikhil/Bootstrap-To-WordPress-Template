@@ -1,0 +1,178 @@
+class RSIterator
+	private rs_
+	
+	public sub init (myrs)
+		Set rs_ = myrs
+	end sub
+	
+	public function has_next
+		has_next = not rs_.eof
+	end function
+	
+	public function get_next
+		set get_next = rs_
+		rs_.MoveNext
+	end function
+end class
+
+class ArrayIterator
+	private array_
+	private length_
+	private i_
+	
+	public property let length (val)
+		length_= val
+	end property
+	
+	public sub init (myarray)
+		array_ = myarray
+		length_ = uBound(myarray) + 1
+		i_ = 0
+	end sub
+	
+	public function has_next
+		has_next = (i_ < length_)
+	end function
+	
+	public function get_next
+		if isObject(array_(i_)) then
+			set get_next = array_(i_)
+		else
+			get_next = array_(i_)
+		end if
+		i_ = i_+ 1
+	end function
+end class
+
+class RecordSetFieldsIterator
+	private rs_
+	private i_
+	
+	public sub init (rs)
+		set rs_ = rs
+		i_ = 0
+	end sub
+	
+	public function has_next
+		has_next = (i_ < rs_.fields.count)
+	end function
+	
+	public function get_next
+		get_next = rs_.fields(i_).name
+		i_ = i_ + 1
+	end function
+end class
+
+class RecordSetKVIterator
+	private rs_
+	private key_
+	private value_
+	
+	public sub init (rs, key, value)
+		set rs_ = rs
+		key_ = key
+		value_ = value
+	end sub
+	
+	public function has_next
+		has_next = not rs_.eof
+	end function
+	
+	public function move_next
+		rs_.moveNext
+	end function
+	
+	public function get_key
+		get_key = rs_(key_)
+	end function
+	
+	public function get_value
+		get_value = rs_(value_)
+	end function
+end class
+
+class RecordSetRecordIterator
+	private rs_
+	private fields_
+	private key_
+	
+	public function init (rs)
+		set rs_ = rs
+		set fields_ = Iterators.recordset_fields(rs)
+	end function
+	
+	public function key
+		key = key_
+	end function
+	
+	public function value
+		value = rs_(key_)
+	end function
+	
+	public function has_next
+		has_next = fields_.has_next
+	end function
+	
+	public function move_next
+		key_ = fields_.get_next
+	end function
+end class
+
+class DictionaryFieldsIterator
+	private dictionary_
+	private i_
+	
+	public sub init (dictionary)
+		set dictionary_ = dictionary
+		i_ = 0
+	end sub
+	
+	public function has_next
+		has_next = (i_ < dictionary_.count)
+	end function
+	
+	public function get_next
+		if isObject(dictionary_(i_)) then
+			set get_next = dictionary_(i_)
+		else
+			get_next = dictionary_(i_)
+		end if
+		i_ = i_+ 1
+	end function
+end class
+
+class MapIterator
+	private itr_
+	private map_
+	
+	public sub init (map)
+		set map_ = map
+		set itr_ = map_.keys.iterator
+	end sub
+end class
+
+class IteratorsModule
+	public function array (a)
+		set array = new ArrayIterator
+		array.init a
+	end function
+	
+	public function list (collection)
+		select case typeName(collection)
+			case "scripting.dictionary"
+				set list = new ArrayIterator
+				ArrayIterator.init(collection.items)
+		end select
+	end function
+	
+	public function recordset_fields (rs)
+		set recordset_fields = new RecordSetFieldsIterator
+		recordset_fields.init(rs)
+	end function
+	
+	public function record_kv (rs)
+		set record_kv = new RecordSetRecordIterator
+		record_kv.init(rs)
+	end function
+end class
+dim Iterators: set Iterators = new IteratorsModule

@@ -1,0 +1,29 @@
+class IntUtilModule
+	function round_up (n)
+		round_up = -1 * (int(-1 * n))
+	end function
+	
+	function round_down (n)
+		round_down = int(n)
+	end function
+	
+	function round_down_to_multiple (n, m)
+		round_down_to_multiple = int(n / m) * m
+	end function
+	
+	function pad (n, width)
+		pad = string(width - len(n), "0") & n
+	end function
+	
+	function humanize(n)
+		dim i: for i = len(n) - 2 to 2 step -3
+			humanize = ("," & mid(n, i, 3)) & humanize
+		next
+		humanize = mid(n, 1, i + 2) & humanize
+	end function
+	
+	function max (n, m)
+		max = iif(m > n, m, n)
+	end function
+end class
+dim IntUtil: set IntUtil = new IntUtilModule
